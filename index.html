@@ -1,11 +1,635 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+  <meta charset="UTF-8" />
+  <title>Daily Activity Tracker</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    :root {
+      --bg: #f5f7fb;
+      --surface: #ffffff;
+      --border: #e0e4ef;
+      --text-main: #1f2933;
+      --text-muted: #6b7280;
+      --accent: #2563eb;
+      --accent-soft: #e0ecff;
+      --danger: #dc2626;
+      --radius-lg: 10px;
+      --radius-sm: 6px;
+      --shadow-soft: 0 10px 30px rgba(15, 23, 42, 0.06);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+        sans-serif;
+      background: radial-gradient(circle at top, #eef2ff 0, #f5f7fb 40%, #f9fafb 100%);
+      color: var(--text-main);
+    }
+
+    .app {
+      max-width: 1040px;
+      margin: 32px auto;
+      padding: 0 16px;
+    }
+
+    .card {
+      background: var(--surface);
+      border-radius: 16px;
+      padding: 20px 20px 16px;
+      box-shadow: var(--shadow-soft);
+      border: 1px solid rgba(148, 163, 184, 0.2);
+    }
+
+    header {
+      margin-bottom: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: 22px;
+      letter-spacing: 0.01em;
+    }
+
+    header p {
+      margin: 2px 0 0;
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+
+    .today-pill {
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: var(--accent-soft);
+      color: var(--accent);
+      font-size: 12px;
+      font-weight: 500;
+      border: 1px solid rgba(37, 99, 235, 0.15);
+      white-space: nowrap;
+    }
+
+    /* Form */
+
+    .form-row {
+      display: grid;
+      grid-template-columns: repeat(6, minmax(0, 1fr));
+      gap: 8px;
+      margin-bottom: 14px;
+      align-items: end;
+    }
+
+    .form-field {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .form-field label {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    input,
+    select,
+    textarea {
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border);
+      padding: 7px 8px;
+      font-size: 13px;
+      font-family: inherit;
+      outline: none;
+      background: #f9fafb;
+      transition: border-color 0.15s ease, box-shadow 0.15s ease,
+        background 0.15s ease;
+    }
+
+    input:focus,
+    select:focus,
+    textarea:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 1px rgba(37, 99, 235, 0.1);
+      background: #ffffff;
+    }
+
+    textarea {
+      resize: vertical;
+      min-height: 32px;
+    }
+
+    button {
+      font-family: inherit;
+      border-radius: var(--radius-sm);
+      border: none;
+      cursor: pointer;
+      font-size: 13px;
+      padding: 8px 12px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      transition: transform 0.05s ease, box-shadow 0.15s ease,
+        background 0.15s ease;
+    }
+
+    button:active {
+      transform: translateY(1px);
+      box-shadow: none;
+    }
+
+    .btn-primary {
+      background: var(--accent);
+      color: white;
+      box-shadow: 0 8px 18px rgba(37, 99, 235, 0.25);
+      white-space: nowrap;
+    }
+
+    .btn-primary:hover {
+      background: #1d4ed8;
+    }
+
+    .btn-ghost {
+      background: transparent;
+      color: var(--text-muted);
+      padding-inline: 8px;
+    }
+
+    .btn-ghost:hover {
+      background: rgba(148, 163, 184, 0.08);
+    }
+
+    .btn-danger-soft {
+      background: rgba(220, 38, 38, 0.06);
+      color: var(--danger);
+      border-radius: 999px;
+      padding-inline: 10px;
+      font-size: 12px;
+    }
+
+    .btn-danger-soft:hover {
+      background: rgba(220, 38, 38, 0.12);
+    }
+
+    /* Toolbar */
+
+    .toolbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 10px;
+      gap: 8px;
+    }
+
+    .toolbar-left,
+    .toolbar-right {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .date-filter-label {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-right: 4px;
+    }
+
+    .pill {
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      padding: 5px 10px;
+      font-size: 12px;
+      background: #f9fafb;
+    }
+
+    .pill strong {
+      color: var(--text-main);
+    }
+
+    /* Table */
+
+    .table-wrapper {
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--border);
+      overflow: hidden;
+      background: #ffffff;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+
+    thead {
+      background: #f9fafb;
+    }
+
+    th,
+    td {
+      padding: 8px 10px;
+      text-align: left;
+      border-bottom: 1px solid #edf0f7;
+      vertical-align: middle;
+    }
+
+    th {
+      font-weight: 600;
+      font-size: 12px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    tbody tr:hover {
+      background: #f3f6ff;
+    }
+
+    .col-time {
+      width: 90px;
+      white-space: nowrap;
+    }
+
+    .col-category {
+      width: 130px;
+    }
+
+    .badge {
+      font-size: 11px;
+      padding: 2px 8px;
+      border-radius: 999px;
+      background: #eef2ff;
+      color: #3730a3;
+      border: 1px solid rgba(129, 140, 248, 0.5);
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .badge-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 999px;
+      background: #4f46e5;
+    }
+
+    .text-muted {
+      color: var(--text-muted);
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 20px 12px 18px;
+      color: var(--text-muted);
+      font-size: 13px;
+    }
+
+    .empty-state span {
+      display: block;
+      margin-top: 4px;
+      font-size: 12px;
+    }
+
+    .actions-cell {
+      text-align: right;
+      width: 40px;
+      padding-right: 14px;
+    }
+
+    /* Responsive */
+
+    @media (max-width: 800px) {
+      .form-row {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .toolbar {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      header {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+    }
+  </style>
 </head>
 <body>
-    
+  <div class="app">
+    <div class="card">
+      <header>
+        <div>
+          <h1>Daily Activity Tracker</h1>
+          <p>Log your day in a clean, table-style view and spot patterns over time.</p>
+        </div>
+        <div class="today-pill" id="todayPill"></div>
+      </header>
+
+      <!-- Add Activity Form -->
+      <form id="activityForm">
+        <div class="form-row">
+          <div class="form-field">
+            <label for="date">Date</label>
+            <input type="date" id="date" required />
+          </div>
+          <div class="form-field">
+            <label for="time">Time</label>
+            <input type="time" id="time" required />
+          </div>
+          <div class="form-field">
+            <label for="category">Category</label>
+            <select id="category">
+              <option>Work</option>
+              <option>Study</option>
+              <option>Exercise</option>
+              <option>Health</option>
+              <option>Personal</option>
+              <option>Other</option>
+            </select>
+          </div>
+          <div class="form-field">
+            <label for="activity">Activity</label>
+            <input
+              type="text"
+              id="activity"
+              placeholder="e.g. UI design, reading, gym"
+              required
+            />
+          </div>
+          <div class="form-field">
+            <label for="duration">Duration (min)</label>
+            <input
+              type="number"
+              id="duration"
+              min="1"
+              placeholder="45"
+            />
+          </div>
+          <div class="form-field">
+            <button type="submit" class="btn-primary">
+              + Add activity
+            </button>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-field" style="grid-column: 1 / -1;">
+            <label for="notes">Notes (optional)</label>
+            <textarea
+              id="notes"
+              placeholder="Highlights, distractions, mood, etc."
+            ></textarea>
+          </div>
+        </div>
+      </form>
+
+      <!-- Toolbar -->
+      <div class="toolbar">
+        <div class="toolbar-left">
+          <span class="date-filter-label">Showing for:</span>
+          <input type="date" id="filterDate" class="pill" />
+          <button id="resetFilter" class="btn-ghost" type="button">
+            Reset date filter
+          </button>
+        </div>
+        <div class="toolbar-right">
+          <div id="summaryPill" class="pill">
+            <strong>0</strong> entries · <span>0 min</span> total
+          </div>
+          <button id="clearAll" type="button" class="btn-danger-soft">
+            Clear all
+          </button>
+        </div>
+      </div>
+
+      <!-- Table -->
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th class="col-time">Time</th>
+              <th class="col-category">Category</th>
+              <th>Activity</th>
+              <th>Duration</th>
+              <th>Notes</th>
+              <th class="actions-cell"></th>
+            </tr>
+          </thead>
+          <tbody id="activityTableBody">
+            <!-- Rows injected by JS -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const STORAGE_KEY = "dailyActivityTracker_v1";
+
+    const form = document.getElementById("activityForm");
+    const dateInput = document.getElementById("date");
+    const timeInput = document.getElementById("time");
+    const categoryInput = document.getElementById("category");
+    const activityInput = document.getElementById("activity");
+    const durationInput = document.getElementById("duration");
+    const notesInput = document.getElementById("notes");
+    const todayPill = document.getElementById("todayPill");
+
+    const filterDateInput = document.getElementById("filterDate");
+    const resetFilterBtn = document.getElementById("resetFilter");
+    const clearAllBtn = document.getElementById("clearAll");
+    const summaryPill = document.getElementById("summaryPill");
+
+    const tableBody = document.getElementById("activityTableBody");
+
+    let activities = [];
+
+    // Utils
+    function loadActivities() {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (!raw) return [];
+      try {
+        return JSON.parse(raw);
+      } catch {
+        return [];
+      }
+    }
+
+    function saveActivities() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(activities));
+    }
+
+    function formatDateLabel(date) {
+      const d = new Date(date);
+      if (Number.isNaN(d.getTime())) return "";
+      return d.toLocaleDateString(undefined, {
+        weekday: "short",
+        year: "numeric",
+        month: "short",
+        day: "numeric",
+      });
+    }
+
+    function initTodayDefaults() {
+      const now = new Date();
+      const isoDate = now.toISOString().slice(0, 10);
+      const hours = String(now.getHours()).padStart(2, "0");
+      const minutes = String(now.getMinutes()).padStart(2, "0");
+
+      dateInput.value = isoDate;
+      timeInput.value = `${hours}:${minutes}`;
+      filterDateInput.value = isoDate;
+
+      todayPill.textContent = formatDateLabel(isoDate);
+    }
+
+    function renderTable() {
+      const filterDate = filterDateInput.value || null;
+
+      tableBody.innerHTML = "";
+      let totalDuration = 0;
+
+      const filtered = activities.filter((act) =>
+        filterDate ? act.date === filterDate : true
+      );
+
+      if (filtered.length === 0) {
+        const tr = document.createElement("tr");
+        const td = document.createElement("td");
+        td.colSpan = 6;
+        td.className = "empty-state";
+        td.innerHTML =
+          "No activities logged for this date.<span>Use the form above to add your first entry.</span>";
+        tr.appendChild(td);
+        tableBody.appendChild(tr);
+      } else {
+        filtered
+          .sort((a, b) => (a.time || "").localeCompare(b.time || ""))
+          .forEach((act) => {
+            const tr = document.createElement("tr");
+
+            const tdTime = document.createElement("td");
+            tdTime.className = "col-time";
+            tdTime.textContent = act.time || "—";
+
+            const tdCat = document.createElement("td");
+            tdCat.className = "col-category";
+            const badge = document.createElement("span");
+            badge.className = "badge";
+            const dot = document.createElement("span");
+            dot.className = "badge-dot";
+            const label = document.createElement("span");
+            label.textContent = act.category;
+            badge.appendChild(dot);
+            badge.appendChild(label);
+            tdCat.appendChild(badge);
+
+            const tdAct = document.createElement("td");
+            tdAct.textContent = act.activity;
+
+            const tdDur = document.createElement("td");
+            tdDur.textContent = act.duration ? `${act.duration} min` : "—";
+
+            const tdNotes = document.createElement("td");
+            tdNotes.className = "text-muted";
+            tdNotes.textContent = act.notes || "";
+
+            const tdActions = document.createElement("td");
+            tdActions.className = "actions-cell";
+            const delBtn = document.createElement("button");
+            delBtn.type = "button";
+            delBtn.className = "btn-ghost";
+            delBtn.textContent = "✕";
+            delBtn.title = "Delete entry";
+            delBtn.addEventListener("click", () => {
+              activities = activities.filter((x) => x.id !== act.id);
+              saveActivities();
+              renderTable();
+            });
+            tdActions.appendChild(delBtn);
+
+            tr.appendChild(tdTime);
+            tr.appendChild(tdCat);
+            tr.appendChild(tdAct);
+            tr.appendChild(tdDur);
+            tr.appendChild(tdNotes);
+            tr.appendChild(tdActions);
+
+            tableBody.appendChild(tr);
+
+            if (act.duration) {
+              totalDuration += Number(act.duration) || 0;
+            }
+          });
+      }
+
+      // Update summary pill
+      summaryPill.innerHTML = `<strong>${filtered.length}</strong> entries · <span>${totalDuration} min</span> total`;
+    }
+
+    // Event handlers
+    form.addEventListener("submit", (e) => {
+      e.preventDefault();
+
+      const date = dateInput.value;
+      const time = timeInput.value;
+      const category = categoryInput.value || "Other";
+      const activity = activityInput.value.trim();
+      const duration = durationInput.value ? Number(durationInput.value) : null;
+      const notes = notesInput.value.trim();
+
+      if (!date || !time || !activity) {
+        return;
+      }
+
+      activities.push({
+        id: crypto.randomUUID(),
+        date,
+        time,
+        category,
+        activity,
+        duration,
+        notes,
+        createdAt: new Date().toISOString(),
+      });
+
+      saveActivities();
+      renderTable();
+
+      // Keep date/time, reset others
+      activityInput.value = "";
+      durationInput.value = "";
+      notesInput.value = "";
+      activityInput.focus();
+    });
+
+    filterDateInput.addEventListener("change", () => {
+      renderTable();
+    });
+
+    resetFilterBtn.addEventListener("click", () => {
+      filterDateInput.value = "";
+      renderTable();
+    });
+
+    clearAllBtn.addEventListener("click", () => {
+      if (!confirm("Clear all saved activities?")) return;
+      activities = [];
+      saveActivities();
+      renderTable();
+    });
+
+    // Init
+    activities = loadActivities();
+    initTodayDefaults();
+    renderTable();
+  </script>
 </body>
 </html>
