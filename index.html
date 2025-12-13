@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>30-Day Activity Tracker</title>
+  <title>30-Day Activity Tracker (Visual)</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <style>
     :root {
@@ -89,7 +89,7 @@
 
     table {
       width: 100%;
-      min-width: 800px;
+      min-width: 780px;
       border-collapse: collapse;
       font-size: 13px;
     }
@@ -141,12 +141,9 @@
       flex-shrink: 0;
     }
 
-    .activity-cell input[type="text"] {
+    .activity-select {
       flex: 1 1 auto;
       min-width: 0;
-    }
-
-    input[type="text"] {
       border-radius: var(--radius-sm);
       border: 1px solid var(--border);
       padding: 5px 6px;
@@ -155,10 +152,10 @@
       outline: none;
       background: #f9fafb;
       transition: border-color 0.15s ease, box-shadow 0.15s ease,
-        background 0.15s ease;
+        background 0.15s ease, color 0.15s ease;
     }
 
-    input[type="text"]:focus {
+    .activity-select:focus {
       border-color: var(--accent);
       box-shadow: 0 0 0 1px rgba(37, 99, 235, 0.1);
       background: #ffffff;
@@ -204,15 +201,6 @@
       box-shadow: none;
     }
 
-    .btn-soft {
-      background: rgba(148, 163, 184, 0.1);
-      color: #4b5563;
-    }
-
-    .btn-soft:hover {
-      background: rgba(148, 163, 184, 0.17);
-    }
-
     .btn-danger {
       background: rgba(220, 38, 38, 0.08);
       color: #b91c1c;
@@ -220,6 +208,95 @@
 
     .btn-danger:hover {
       background: rgba(220, 38, 38, 0.15);
+    }
+
+    /* Heatmap section */
+
+    .heatmap-section {
+      margin-top: 18px;
+      padding-top: 12px;
+      border-top: 1px dashed rgba(148, 163, 184, 0.6);
+    }
+
+    .heatmap-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 6px;
+    }
+
+    .heatmap-title {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text-main);
+    }
+
+    .heatmap-legend {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      font-size: 11px;
+      color: var(--text-muted);
+      flex-wrap: wrap;
+    }
+
+    .legend-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .legend-swatch {
+      width: 12px;
+      height: 12px;
+      border-radius: 4px;
+      border: 1px solid rgba(148, 163, 184, 0.8);
+    }
+
+    .heatmap-row {
+      display: grid;
+      grid-template-columns: repeat(30, minmax(0, 1fr));
+      gap: 4px;
+    }
+
+    .heat-day {
+      height: 20px;
+      border-radius: 6px;
+      border: 1px solid rgba(148, 163, 184, 0.7);
+      font-size: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: default;
+      user-select: none;
+      background: #f9fafb;
+      color: #6b7280;
+    }
+
+    .heat-day.low {
+      background: #fee2e2;
+      border-color: #fecaca;
+      color: #991b1b;
+    }
+
+    .heat-day.medium {
+      background: #fef9c3;
+      border-color: #facc15;
+      color: #854d0e;
+    }
+
+    .heat-day.high {
+      background: #bbf7d0;
+      border-color: #4ade80;
+      color: #14532d;
+    }
+
+    .heat-day.empty {
+      background: #f9fafb;
+      border-style: dashed;
+      color: #9ca3af;
     }
 
     @media (max-width: 640px) {
@@ -236,14 +313,14 @@
       <header>
         <div>
           <h1>30-Day Activity Tracker</h1>
-          <p>Use each row as a day and each cell for activities like trading, coding, automation, etc.</p>
+          <p>Each day has 5 slots. Choose activity type and tick it when done.</p>
         </div>
-        <span class="tag">30 days · 5 activities per day</span>
+        <span class="tag">Checkbox + color-coded dropdown · Local only</span>
       </header>
 
       <div class="hint">
-        Type your own activity names in each cell. Tick the checkbox when you complete that activity for the day.
-        Data is saved automatically in this browser.
+        Suggested activities: trading practice, coding, automation, learning, exercise…
+        You can change the activity list in the code (top of the script).
       </div>
 
       <div class="table-wrapper">
@@ -259,38 +336,74 @@
             </tr>
           </thead>
           <tbody id="tableBody">
-            <!-- Rows injected by JS -->
+            <!-- rows from JS -->
           </tbody>
         </table>
       </div>
 
       <div class="footer-bar">
         <div class="summary" id="summaryText">
-          0 / 150 activities completed
+          0 activities completed
         </div>
         <div class="button-row">
-          <button type="button" class="btn-soft" id="resetNames">
-            Clear all activity names
-          </button>
           <button type="button" class="btn-danger" id="resetAll">
-            Clear everything (names + checkmarks)
+            Clear all data
           </button>
+        </div>
+      </div>
+
+      <!-- Final visual based on completion -->
+      <div class="heatmap-section">
+        <div class="heatmap-header">
+          <div class="heatmap-title">Daily completion overview (30 days)</div>
+          <div class="heatmap-legend">
+            <div class="legend-item">
+              <span class="legend-swatch" style="background:#bbf7d0;border-color:#4ade80;"></span>
+              <span>High (80–100%)</span>
+            </div>
+            <div class="legend-item">
+              <span class="legend-swatch" style="background:#fef9c3;border-color:#facc15;"></span>
+              <span>Medium (40–79%)</span>
+            </div>
+            <div class="legend-item">
+              <span class="legend-swatch" style="background:#fee2e2;border-color:#fecaca;"></span>
+              <span>Low (&lt; 40%)</span>
+            </div>
+            <div class="legend-item">
+              <span class="legend-swatch" style="background:#f9fafb;border-style:dashed;"></span>
+              <span>No activity</span>
+            </div>
+          </div>
+        </div>
+        <div class="heatmap-row" id="heatmapRow">
+          <!-- day boxes from JS -->
         </div>
       </div>
     </div>
   </div>
 
   <script>
+    // === CONFIG: edit activity list + colors here ===
+    const ACTIVITY_TYPES = [
+      { key: "none", label: "—", color: "#f9fafb", textColor: "#6b7280" },
+      { key: "trading", label: "Trading practice", color: "#dbeafe", textColor: "#1d4ed8" },
+      { key: "coding", label: "Coding", color: "#dcfce7", textColor: "#166534" },
+      { key: "automation", label: "Automation", color: "#ffedd5", textColor: "#9a3412" },
+      { key: "learning", label: "Learning / Study", color: "#e0e7ff", textColor: "#3730a3" },
+      { key: "exercise", label: "Exercise", color: "#fee2e2", textColor: "#b91c1c" },
+      { key: "other", label: "Other", color: "#f3e8ff", textColor: "#6b21a8" }
+    ];
+
     const DAYS = 30;
     const SLOTS = 5;
-    const STORAGE_KEY = "thirty_day_activity_tracker_v1";
+    const STORAGE_KEY = "thirty_day_activity_visual_v1";
 
     const tableBody = document.getElementById("tableBody");
     const summaryText = document.getElementById("summaryText");
-    const resetNamesBtn = document.getElementById("resetNames");
     const resetAllBtn = document.getElementById("resetAll");
+    const heatmapRow = document.getElementById("heatmapRow");
 
-    // Data structure: [ { activities: [ { name, done }, ...5 ] }, ...30 days ]
+    // Data structure: [ { activities: [ { typeKey, done }, ...] }, ...30 ]
     let data = [];
 
     function loadData() {
@@ -310,11 +423,11 @@
       } else {
         data = [];
         for (let d = 0; d < DAYS; d++) {
-          const dayActivities = [];
+          const day = { activities: [] };
           for (let s = 0; s < SLOTS; s++) {
-            dayActivities.push({ name: "", done: false });
+            day.activities.push({ typeKey: "none", done: false });
           }
-          data.push({ activities: dayActivities });
+          data.push(day);
         }
       }
     }
@@ -323,15 +436,76 @@
       localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
     }
 
-    function updateSummary() {
+    function findActivityType(key) {
+      return ACTIVITY_TYPES.find((a) => a.key === key) || ACTIVITY_TYPES[0];
+    }
+
+    function styleSelectByType(selectEl, typeKey) {
+      const type = findActivityType(typeKey);
+      if (type.key === "none") {
+        selectEl.style.backgroundColor = "#f9fafb";
+        selectEl.style.color = "#374151";
+        selectEl.style.borderColor = "#e5e7eb";
+      } else {
+        selectEl.style.backgroundColor = type.color;
+        selectEl.style.color = type.textColor;
+        selectEl.style.borderColor = "rgba(15, 23, 42, 0.25)";
+      }
+    }
+
+    function updateSummaryAndHeatmap() {
       let completed = 0;
-      data.forEach((day) => {
+      let activeSlots = 0;
+      const dayStats = [];
+
+      data.forEach((day, dIndex) => {
+        let dayActive = 0;
+        let dayCompleted = 0;
         day.activities.forEach((act) => {
-          if (act.done) completed++;
+          if (act.typeKey !== "none") {
+            dayActive++;
+            activeSlots++;
+            if (act.done) {
+              dayCompleted++;
+              completed++;
+            }
+          }
         });
+        dayStats.push({ active: dayActive, completed: dayCompleted });
       });
-      const total = DAYS * SLOTS;
-      summaryText.textContent = `${completed} / ${total} activities completed`;
+
+      if (activeSlots === 0) {
+        summaryText.textContent = "No activities selected yet";
+      } else {
+        const percentage = Math.round((completed / activeSlots) * 100);
+        summaryText.textContent = `${completed} / ${activeSlots} active slots completed (${percentage}%)`;
+      }
+
+      // Build heatmap
+      heatmapRow.innerHTML = "";
+      dayStats.forEach((stat, index) => {
+        const box = document.createElement("div");
+        box.className = "heat-day";
+        let ratio = 0;
+        if (stat.active === 0) {
+          box.classList.add("empty");
+          box.textContent = index + 1;
+          box.title = `Day ${index + 1}: no activity set`;
+        } else {
+          ratio = stat.completed / stat.active;
+          if (ratio >= 0.8) {
+            box.classList.add("high");
+          } else if (ratio >= 0.4) {
+            box.classList.add("medium");
+          } else {
+            box.classList.add("low");
+          }
+          const percent = Math.round(ratio * 100);
+          box.textContent = index + 1;
+          box.title = `Day ${index + 1}: ${stat.completed}/${stat.active} completed (${percent}%)`;
+        }
+        heatmapRow.appendChild(box);
+      });
     }
 
     function buildTable() {
@@ -356,20 +530,32 @@
           checkbox.addEventListener("change", (e) => {
             data[d].activities[s].done = e.target.checked;
             saveData();
-            updateSummary();
+            updateSummaryAndHeatmap();
           });
 
-          const input = document.createElement("input");
-          input.type = "text";
-          input.placeholder = "e.g. Trading practice";
-          input.value = data[d].activities[s].name || "";
-          input.addEventListener("input", (e) => {
-            data[d].activities[s].name = e.target.value;
+          const select = document.createElement("select");
+          select.className = "activity-select";
+
+          ACTIVITY_TYPES.forEach((t) => {
+            const opt = document.createElement("option");
+            opt.value = t.key;
+            opt.textContent = t.label;
+            select.appendChild(opt);
+          });
+
+          select.value = data[d].activities[s].typeKey || "none";
+          styleSelectByType(select, select.value);
+
+          select.addEventListener("change", (e) => {
+            const val = e.target.value;
+            data[d].activities[s].typeKey = val;
+            styleSelectByType(select, val);
             saveData();
+            updateSummaryAndHeatmap();
           });
 
           wrapper.appendChild(checkbox);
-          wrapper.appendChild(input);
+          wrapper.appendChild(select);
           td.appendChild(wrapper);
           tr.appendChild(td);
         }
@@ -377,31 +563,18 @@
         tableBody.appendChild(tr);
       }
 
-      updateSummary();
+      updateSummaryAndHeatmap();
     }
 
-    // Reset just names, keep completion state
-    resetNamesBtn.addEventListener("click", () => {
-      if (!confirm("Clear all activity names, but keep checkmarks?")) return;
-      for (let d = 0; d < DAYS; d++) {
-        for (let s = 0; s < SLOTS; s++) {
-          data[d].activities[s].name = "";
-        }
-      }
-      saveData();
-      buildTable();
-    });
-
-    // Reset everything
     resetAllBtn.addEventListener("click", () => {
-      if (!confirm("Clear everything (names + checkmarks) for all 30 days?")) return;
+      if (!confirm("Clear all activities and completion data for all 30 days?")) return;
       data = [];
       for (let d = 0; d < DAYS; d++) {
-        const dayActivities = [];
+        const day = { activities: [] };
         for (let s = 0; s < SLOTS; s++) {
-          dayActivities.push({ name: "", done: false });
+          day.activities.push({ typeKey: "none", done: false });
         }
-        data.push({ activities: dayActivities });
+        data.push(day);
       }
       saveData();
       buildTable();
