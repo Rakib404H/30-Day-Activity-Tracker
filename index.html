@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>30-Day Activity Tracker (Visual)</title>
+  <title>30-Day Habit Completion Tracker</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <style>
     :root {
@@ -18,9 +18,7 @@
       --shadow-soft: 0 10px 30px rgba(15, 23, 42, 0.06);
     }
 
-    * {
-      box-sizing: border-box;
-    }
+    * { box-sizing: border-box; }
 
     body {
       margin: 0;
@@ -128,37 +126,83 @@
       font-weight: 600;
     }
 
-    .activity-cell {
-      display: flex;
-      align-items: center;
-      gap: 6px;
+    .habit-cell {
+      text-align: center;
     }
 
-    .activity-cell input[type="checkbox"] {
-      width: 16px;
-      height: 16px;
+    .habit-cell input[type="checkbox"] {
+      width: 18px;
+      height: 18px;
       cursor: pointer;
-      flex-shrink: 0;
     }
 
-    .activity-select {
-      flex: 1 1 auto;
-      min-width: 0;
-      border-radius: var(--radius-sm);
-      border: 1px solid var(--border);
-      padding: 5px 6px;
-      font-size: 13px;
+    /* Completion column */
+
+    .completion-cell {
+      width: 150px;
+    }
+
+    .completion-pill {
+      border-radius: 999px;
+      padding: 4px 10px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 6px;
+      width: 100%;
+      border: 1px solid #e5e7eb;
+      background: #f9fafb;
+      font-size: 12px;
+      transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+    }
+
+    .completion-label {
+      font-weight: 500;
+    }
+
+    .completion-select {
+      border: none;
+      background: transparent;
+      font-size: 12px;
       font-family: inherit;
       outline: none;
-      background: #f9fafb;
-      transition: border-color 0.15s ease, box-shadow 0.15s ease,
-        background 0.15s ease, color 0.15s ease;
+      padding: 2px 0;
+      cursor: pointer;
+      color: inherit;
     }
 
-    .activity-select:focus {
-      border-color: var(--accent);
-      box-shadow: 0 0 0 1px rgba(37, 99, 235, 0.1);
-      background: #ffffff;
+    .completion-select option {
+      color: #111827;
+    }
+
+    .completion-pill.none {
+      background: #f9fafb;
+      border-style: dashed;
+      color: #6b7280;
+    }
+
+    .completion-pill.p25 {
+      background: #fee2e2;
+      border-color: #fecaca;
+      color: #991b1b;
+    }
+
+    .completion-pill.p50 {
+      background: #fef9c3;
+      border-color: #facc15;
+      color: #854d0e;
+    }
+
+    .completion-pill.p75 {
+      background: #ccfbf1;
+      border-color: #14b8a6;
+      color: #115e59;
+    }
+
+    .completion-pill.p100 {
+      background: #bbf7d0;
+      border-color: #22c55e;
+      color: #14532d;
     }
 
     .footer-bar {
@@ -174,12 +218,6 @@
 
     .summary {
       font-weight: 500;
-    }
-
-    .button-row {
-      display: flex;
-      gap: 6px;
-      flex-wrap: wrap;
     }
 
     button {
@@ -210,95 +248,6 @@
       background: rgba(220, 38, 38, 0.15);
     }
 
-    /* Heatmap section */
-
-    .heatmap-section {
-      margin-top: 18px;
-      padding-top: 12px;
-      border-top: 1px dashed rgba(148, 163, 184, 0.6);
-    }
-
-    .heatmap-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 8px;
-      flex-wrap: wrap;
-      margin-bottom: 6px;
-    }
-
-    .heatmap-title {
-      font-size: 13px;
-      font-weight: 500;
-      color: var(--text-main);
-    }
-
-    .heatmap-legend {
-      display: flex;
-      gap: 8px;
-      align-items: center;
-      font-size: 11px;
-      color: var(--text-muted);
-      flex-wrap: wrap;
-    }
-
-    .legend-item {
-      display: inline-flex;
-      align-items: center;
-      gap: 4px;
-    }
-
-    .legend-swatch {
-      width: 12px;
-      height: 12px;
-      border-radius: 4px;
-      border: 1px solid rgba(148, 163, 184, 0.8);
-    }
-
-    .heatmap-row {
-      display: grid;
-      grid-template-columns: repeat(30, minmax(0, 1fr));
-      gap: 4px;
-    }
-
-    .heat-day {
-      height: 20px;
-      border-radius: 6px;
-      border: 1px solid rgba(148, 163, 184, 0.7);
-      font-size: 10px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: default;
-      user-select: none;
-      background: #f9fafb;
-      color: #6b7280;
-    }
-
-    .heat-day.low {
-      background: #fee2e2;
-      border-color: #fecaca;
-      color: #991b1b;
-    }
-
-    .heat-day.medium {
-      background: #fef9c3;
-      border-color: #facc15;
-      color: #854d0e;
-    }
-
-    .heat-day.high {
-      background: #bbf7d0;
-      border-color: #4ade80;
-      color: #14532d;
-    }
-
-    .heat-day.empty {
-      background: #f9fafb;
-      border-style: dashed;
-      color: #9ca3af;
-    }
-
     @media (max-width: 640px) {
       header {
         flex-direction: column;
@@ -312,15 +261,15 @@
     <div class="card">
       <header>
         <div>
-          <h1>30-Day Activity Tracker</h1>
-          <p>Each day has 5 slots. Choose activity type and tick it when done.</p>
+          <h1>30-Day Habit Completion Tracker</h1>
+          <p>Track 4 key habits per day and rate your overall completion in the last column.</p>
         </div>
-        <span class="tag">Checkbox + color-coded dropdown · Local only</span>
+        <span class="tag">30 days · 4 habits · 25/50/75/100% summary</span>
       </header>
 
       <div class="hint">
-        Suggested activities: trading practice, coding, automation, learning, exercise…
-        You can change the activity list in the code (top of the script).
+        Current habits: Trading, Coding, Automation, Learning. You can rename them in the code if you want.
+        Check habits you did, and use the last column dropdown (25%, 50%, 75%, 100%) as your daily completion overview.
       </div>
 
       <div class="table-wrapper">
@@ -328,11 +277,11 @@
           <thead>
             <tr>
               <th class="col-day">Day</th>
-              <th>Activity 1</th>
-              <th>Activity 2</th>
-              <th>Activity 3</th>
-              <th>Activity 4</th>
-              <th>Activity 5</th>
+              <th>Trading</th>
+              <th>Coding</th>
+              <th>Automation</th>
+              <th>Learning / Study</th>
+              <th>Daily completion overview</th>
             </tr>
           </thead>
           <tbody id="tableBody">
@@ -343,67 +292,29 @@
 
       <div class="footer-bar">
         <div class="summary" id="summaryText">
-          0 activities completed
+          No data yet
         </div>
-        <div class="button-row">
-          <button type="button" class="btn-danger" id="resetAll">
-            Clear all data
-          </button>
-        </div>
-      </div>
-
-      <!-- Final visual based on completion -->
-      <div class="heatmap-section">
-        <div class="heatmap-header">
-          <div class="heatmap-title">Daily completion overview (30 days)</div>
-          <div class="heatmap-legend">
-            <div class="legend-item">
-              <span class="legend-swatch" style="background:#bbf7d0;border-color:#4ade80;"></span>
-              <span>High (80–100%)</span>
-            </div>
-            <div class="legend-item">
-              <span class="legend-swatch" style="background:#fef9c3;border-color:#facc15;"></span>
-              <span>Medium (40–79%)</span>
-            </div>
-            <div class="legend-item">
-              <span class="legend-swatch" style="background:#fee2e2;border-color:#fecaca;"></span>
-              <span>Low (&lt; 40%)</span>
-            </div>
-            <div class="legend-item">
-              <span class="legend-swatch" style="background:#f9fafb;border-style:dashed;"></span>
-              <span>No activity</span>
-            </div>
-          </div>
-        </div>
-        <div class="heatmap-row" id="heatmapRow">
-          <!-- day boxes from JS -->
-        </div>
+        <button type="button" class="btn-danger" id="resetAll">
+          Clear all 30 days
+        </button>
       </div>
     </div>
   </div>
 
   <script>
-    // === CONFIG: edit activity list + colors here ===
-    const ACTIVITY_TYPES = [
-      { key: "none", label: "—", color: "#f9fafb", textColor: "#6b7280" },
-      { key: "trading", label: "Trading practice", color: "#dbeafe", textColor: "#1d4ed8" },
-      { key: "coding", label: "Coding", color: "#dcfce7", textColor: "#166534" },
-      { key: "automation", label: "Automation", color: "#ffedd5", textColor: "#9a3412" },
-      { key: "learning", label: "Learning / Study", color: "#e0e7ff", textColor: "#3730a3" },
-      { key: "exercise", label: "Exercise", color: "#fee2e2", textColor: "#b91c1c" },
-      { key: "other", label: "Other", color: "#f3e8ff", textColor: "#6b21a8" }
-    ];
-
     const DAYS = 30;
-    const SLOTS = 5;
-    const STORAGE_KEY = "thirty_day_activity_visual_v1";
+    const HABITS = ["trading", "coding", "automation", "learning"]; // 4 habits
+    const STORAGE_KEY = "thirty_day_habit_completion_v1";
 
     const tableBody = document.getElementById("tableBody");
     const summaryText = document.getElementById("summaryText");
     const resetAllBtn = document.getElementById("resetAll");
-    const heatmapRow = document.getElementById("heatmapRow");
 
-    // Data structure: [ { activities: [ { typeKey, done }, ...] }, ...30 ]
+    // Data structure:
+    // data[dayIndex] = {
+    //   habits: [true/false,...4],
+    //   completion: "none" | "25" | "50" | "75" | "100"
+    // }
     let data = [];
 
     function loadData() {
@@ -423,11 +334,10 @@
       } else {
         data = [];
         for (let d = 0; d < DAYS; d++) {
-          const day = { activities: [] };
-          for (let s = 0; s < SLOTS; s++) {
-            day.activities.push({ typeKey: "none", done: false });
-          }
-          data.push(day);
+          data.push({
+            habits: HABITS.map(() => false),
+            completion: "none",
+          });
         }
       }
     }
@@ -436,76 +346,55 @@
       localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
     }
 
-    function findActivityType(key) {
-      return ACTIVITY_TYPES.find((a) => a.key === key) || ACTIVITY_TYPES[0];
-    }
-
-    function styleSelectByType(selectEl, typeKey) {
-      const type = findActivityType(typeKey);
-      if (type.key === "none") {
-        selectEl.style.backgroundColor = "#f9fafb";
-        selectEl.style.color = "#374151";
-        selectEl.style.borderColor = "#e5e7eb";
-      } else {
-        selectEl.style.backgroundColor = type.color;
-        selectEl.style.color = type.textColor;
-        selectEl.style.borderColor = "rgba(15, 23, 42, 0.25)";
+    function completionClass(value) {
+      switch (value) {
+        case "25": return "p25";
+        case "50": return "p50";
+        case "75": return "p75";
+        case "100": return "p100";
+        default: return "none";
       }
     }
 
-    function updateSummaryAndHeatmap() {
-      let completed = 0;
-      let activeSlots = 0;
-      const dayStats = [];
+    function completionLabel(value) {
+      if (value === "none") return "Not set";
+      return value + "%";
+    }
 
-      data.forEach((day, dIndex) => {
-        let dayActive = 0;
-        let dayCompleted = 0;
-        day.activities.forEach((act) => {
-          if (act.typeKey !== "none") {
-            dayActive++;
-            activeSlots++;
-            if (act.done) {
-              dayCompleted++;
-              completed++;
-            }
-          }
-        });
-        dayStats.push({ active: dayActive, completed: dayCompleted });
-      });
+    function autoSuggestCompletion(dayIndex) {
+      const habits = data[dayIndex].habits;
+      const total = habits.length;
+      const doneCount = habits.filter(Boolean).length;
+      if (doneCount === 0) return "none";
 
-      if (activeSlots === 0) {
-        summaryText.textContent = "No activities selected yet";
-      } else {
-        const percentage = Math.round((completed / activeSlots) * 100);
-        summaryText.textContent = `${completed} / ${activeSlots} active slots completed (${percentage}%)`;
-      }
+      const ratio = doneCount / total;
+      if (ratio <= 0.25) return "25";
+      if (ratio <= 0.5) return "50";
+      if (ratio <= 0.75) return "75";
+      return "100";
+    }
 
-      // Build heatmap
-      heatmapRow.innerHTML = "";
-      dayStats.forEach((stat, index) => {
-        const box = document.createElement("div");
-        box.className = "heat-day";
-        let ratio = 0;
-        if (stat.active === 0) {
-          box.classList.add("empty");
-          box.textContent = index + 1;
-          box.title = `Day ${index + 1}: no activity set`;
-        } else {
-          ratio = stat.completed / stat.active;
-          if (ratio >= 0.8) {
-            box.classList.add("high");
-          } else if (ratio >= 0.4) {
-            box.classList.add("medium");
-          } else {
-            box.classList.add("low");
-          }
-          const percent = Math.round(ratio * 100);
-          box.textContent = index + 1;
-          box.title = `Day ${index + 1}: ${stat.completed}/${stat.active} completed (${percent}%)`;
+    function updateSummary() {
+      let countDaysWithCompletion = 0;
+      let sumPercentage = 0;
+      let perfectDays = 0;
+
+      data.forEach((day) => {
+        if (day.completion !== "none") {
+          countDaysWithCompletion++;
+          const val = parseInt(day.completion, 10);
+          sumPercentage += val;
+          if (val === 100) perfectDays++;
         }
-        heatmapRow.appendChild(box);
       });
+
+      if (countDaysWithCompletion === 0) {
+        summaryText.textContent = "No daily completion set yet.";
+      } else {
+        const avg = Math.round(sumPercentage / countDaysWithCompletion);
+        summaryText.textContent =
+          `Average completion: ${avg}% · Perfect days (100%): ${perfectDays}`;
+      }
     }
 
     function buildTable() {
@@ -514,67 +403,115 @@
       for (let d = 0; d < DAYS; d++) {
         const tr = document.createElement("tr");
 
+        // Day number
         const tdDay = document.createElement("td");
         tdDay.className = "col-day";
         tdDay.textContent = d + 1;
         tr.appendChild(tdDay);
 
-        for (let s = 0; s < SLOTS; s++) {
+        // Habit checkboxes
+        HABITS.forEach((_, hIndex) => {
           const td = document.createElement("td");
-          const wrapper = document.createElement("div");
-          wrapper.className = "activity-cell";
-
+          td.className = "habit-cell";
           const checkbox = document.createElement("input");
           checkbox.type = "checkbox";
-          checkbox.checked = !!data[d].activities[s].done;
+          checkbox.checked = !!data[d].habits[hIndex];
+
           checkbox.addEventListener("change", (e) => {
-            data[d].activities[s].done = e.target.checked;
+            data[d].habits[hIndex] = e.target.checked;
+            // Auto-suggest completion if not manually overridden yet
+            const suggested = autoSuggestCompletion(d);
+            if (data[d].completion === "none" || data[d].completion === "25" ||
+                data[d].completion === "50" || data[d].completion === "75" ||
+                data[d].completion === "100") {
+              // update select + pill only if we think it's okay to auto-adjust
+              const select = document.querySelector(
+                `select[data-day="${d}"]`
+              );
+              const pill = document.querySelector(
+                `div[data-completion-pill="${d}"]`
+              );
+              if (select && pill && suggested !== "none") {
+                select.value = suggested;
+                data[d].completion = suggested;
+                pill.className = "completion-pill " + completionClass(suggested);
+                pill.querySelector(".completion-label").textContent =
+                  completionLabel(suggested);
+              } else {
+                data[d].completion = suggested;
+              }
+            }
             saveData();
-            updateSummaryAndHeatmap();
+            updateSummary();
           });
 
-          const select = document.createElement("select");
-          select.className = "activity-select";
-
-          ACTIVITY_TYPES.forEach((t) => {
-            const opt = document.createElement("option");
-            opt.value = t.key;
-            opt.textContent = t.label;
-            select.appendChild(opt);
-          });
-
-          select.value = data[d].activities[s].typeKey || "none";
-          styleSelectByType(select, select.value);
-
-          select.addEventListener("change", (e) => {
-            const val = e.target.value;
-            data[d].activities[s].typeKey = val;
-            styleSelectByType(select, val);
-            saveData();
-            updateSummaryAndHeatmap();
-          });
-
-          wrapper.appendChild(checkbox);
-          wrapper.appendChild(select);
-          td.appendChild(wrapper);
+          td.appendChild(checkbox);
           tr.appendChild(td);
-        }
+        });
+
+        // Completion cell
+        const tdCompletion = document.createElement("td");
+        tdCompletion.className = "completion-cell";
+
+        const pill = document.createElement("div");
+        pill.className =
+          "completion-pill " + completionClass(data[d].completion);
+        pill.setAttribute("data-completion-pill", d.toString());
+
+        const labelSpan = document.createElement("span");
+        labelSpan.className = "completion-label";
+        labelSpan.textContent = completionLabel(data[d].completion);
+
+        const select = document.createElement("select");
+        select.className = "completion-select";
+        select.setAttribute("data-day", d.toString());
+
+        // Options: empty + 25,50,75,100
+        const options = [
+          { value: "none", text: "Select…" },
+          { value: "25", text: "25%" },
+          { value: "50", text: "50%" },
+          { value: "75", text: "75%" },
+          { value: "100", text: "100%" },
+        ];
+
+        options.forEach((opt) => {
+          const o = document.createElement("option");
+          o.value = opt.value;
+          o.textContent = opt.text;
+          select.appendChild(o);
+        });
+
+        select.value = data[d].completion || "none";
+
+        select.addEventListener("change", (e) => {
+          const value = e.target.value;
+          data[d].completion = value;
+          pill.className = "completion-pill " + completionClass(value);
+          labelSpan.textContent = completionLabel(value);
+          saveData();
+          updateSummary();
+        });
+
+        pill.appendChild(labelSpan);
+        pill.appendChild(select);
+        tdCompletion.appendChild(pill);
+        tr.appendChild(tdCompletion);
 
         tableBody.appendChild(tr);
       }
 
-      updateSummaryAndHeatmap();
+      updateSummary();
     }
 
     resetAllBtn.addEventListener("click", () => {
-      if (!confirm("Clear all activities and completion data for all 30 days?")) return;
+      if (!confirm("Clear all 30 days (habits and completion)?")) return;
       data = [];
       for (let d = 0; d < DAYS; d++) {
-        const day = { activities: [] };
-        for (let s = 0; s < SLOTS; s++) {
-          day.activities.push({ typeKey: "none", done: false });
-        }
-        data.push(day);
+        data.push({
+          habits: HABITS.map(() => false),
+          completion: "none",
+        });
       }
       saveData();
       buildTable();
