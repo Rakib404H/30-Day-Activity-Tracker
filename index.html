@@ -2,14 +2,14 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Daily Activity Table Tracker</title>
+  <title>30-Day Activity Tracker</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <style>
     :root {
       --bg: #f5f7fb;
       --surface: #ffffff;
       --border: #e0e4ef;
-      --text-main: #1f2933;
+      --text-main: #111827;
       --text-muted: #6b7280;
       --accent: #2563eb;
       --accent-soft: #e0ecff;
@@ -31,7 +31,7 @@
     }
 
     .app {
-      max-width: 900px;
+      max-width: 1100px;
       margin: 32px auto;
       padding: 0 16px;
     }
@@ -45,11 +45,12 @@
     }
 
     header {
+      margin-bottom: 14px;
       display: flex;
       justify-content: space-between;
       align-items: center;
       gap: 12px;
-      margin-bottom: 18px;
+      flex-wrap: wrap;
     }
 
     header h1 {
@@ -58,53 +59,37 @@
     }
 
     header p {
-      margin: 2px 0 0;
+      margin: 4px 0 0;
       font-size: 13px;
       color: var(--text-muted);
     }
 
-    .date-box {
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-      font-size: 12px;
-      align-items: flex-end;
-    }
-
-    .date-box label {
-      color: var(--text-muted);
-    }
-
-    .date-box input[type="date"] {
-      border-radius: var(--radius-sm);
-      border: 1px solid var(--border);
-      padding: 6px 8px;
-      font-size: 13px;
-      background: #f9fafb;
-      outline: none;
-    }
-
-    .date-box input[type="date"]:focus {
-      border-color: var(--accent);
-      box-shadow: 0 0 0 1px rgba(37, 99, 235, 0.15);
-      background: #ffffff;
+    .tag {
+      font-size: 11px;
+      padding: 4px 9px;
+      border-radius: 999px;
+      background: var(--accent-soft);
+      color: var(--accent);
+      border: 1px solid rgba(37, 99, 235, 0.25);
+      white-space: nowrap;
     }
 
     .hint {
       font-size: 12px;
       color: var(--text-muted);
-      margin-bottom: 10px;
+      margin-bottom: 8px;
     }
 
     .table-wrapper {
       border-radius: var(--radius-lg);
       border: 1px solid var(--border);
-      overflow: hidden;
+      overflow-x: auto;
       background: #ffffff;
     }
 
     table {
       width: 100%;
+      min-width: 800px;
       border-collapse: collapse;
       font-size: 13px;
     }
@@ -115,48 +100,56 @@
 
     th,
     td {
-      padding: 8px 10px;
+      padding: 8px 8px;
       border-bottom: 1px solid #edf0f7;
       text-align: left;
       vertical-align: middle;
     }
 
     th {
-      font-size: 12px;
+      font-size: 11px;
       font-weight: 600;
       color: var(--text-muted);
       text-transform: uppercase;
-      letter-spacing: 0.04em;
+      letter-spacing: 0.05em;
+    }
+
+    tbody tr:nth-child(even) {
+      background: #fdfdff;
     }
 
     tbody tr:hover {
       background: #f3f6ff;
     }
 
-    .col-index {
-      width: 40px;
+    .col-day {
+      width: 70px;
       text-align: center;
+      font-weight: 600;
     }
 
-    .col-activity {
-      width: 40%;
+    .activity-cell {
+      display: flex;
+      align-items: center;
+      gap: 6px;
     }
 
-    .col-completed {
-      width: 90px;
-      text-align: center;
+    .activity-cell input[type="checkbox"] {
+      width: 16px;
+      height: 16px;
+      cursor: pointer;
+      flex-shrink: 0;
     }
 
-    .col-notes {
-      width: 40%;
+    .activity-cell input[type="text"] {
+      flex: 1 1 auto;
+      min-width: 0;
     }
 
-    input[type="text"],
-    textarea {
-      width: 100%;
+    input[type="text"] {
       border-radius: var(--radius-sm);
       border: 1px solid var(--border);
-      padding: 6px 7px;
+      padding: 5px 6px;
       font-size: 13px;
       font-family: inherit;
       outline: none;
@@ -165,53 +158,73 @@
         background 0.15s ease;
     }
 
-    input[type="text"]:focus,
-    textarea:focus {
+    input[type="text"]:focus {
       border-color: var(--accent);
       box-shadow: 0 0 0 1px rgba(37, 99, 235, 0.1);
       background: #ffffff;
     }
 
-    textarea {
-      resize: vertical;
-      min-height: 28px;
-    }
-
-    input[type="checkbox"] {
-      width: 18px;
-      height: 18px;
-      cursor: pointer;
-    }
-
-    .footer-info {
+    .footer-bar {
       margin-top: 10px;
       display: flex;
       justify-content: space-between;
       align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
       font-size: 12px;
       color: var(--text-muted);
-      gap: 8px;
+    }
+
+    .summary {
+      font-weight: 500;
+    }
+
+    .button-row {
+      display: flex;
+      gap: 6px;
       flex-wrap: wrap;
     }
 
-    .badge {
+    button {
+      font-family: inherit;
+      font-size: 12px;
+      border-radius: 999px;
+      border: none;
+      padding: 6px 12px;
+      cursor: pointer;
       display: inline-flex;
       align-items: center;
-      gap: 6px;
-      padding: 4px 9px;
-      border-radius: 999px;
-      background: var(--accent-soft);
-      color: var(--accent);
-      font-size: 11px;
-      border: 1px solid rgba(37, 99, 235, 0.25);
+      gap: 5px;
+      transition: background 0.15s ease, box-shadow 0.15s ease,
+        transform 0.05s ease;
+    }
+
+    button:active {
+      transform: translateY(1px);
+      box-shadow: none;
+    }
+
+    .btn-soft {
+      background: rgba(148, 163, 184, 0.1);
+      color: #4b5563;
+    }
+
+    .btn-soft:hover {
+      background: rgba(148, 163, 184, 0.17);
+    }
+
+    .btn-danger {
+      background: rgba(220, 38, 38, 0.08);
+      color: #b91c1c;
+    }
+
+    .btn-danger:hover {
+      background: rgba(220, 38, 38, 0.15);
     }
 
     @media (max-width: 640px) {
       header {
         flex-direction: column;
-        align-items: flex-start;
-      }
-      .date-box {
         align-items: flex-start;
       }
     }
@@ -222,177 +235,181 @@
     <div class="card">
       <header>
         <div>
-          <h1>Daily Activity Tracker</h1>
-          <p>Fill in your own activities and tick them off as you complete them.</p>
+          <h1>30-Day Activity Tracker</h1>
+          <p>Use each row as a day and each cell for activities like trading, coding, automation, etc.</p>
         </div>
-        <div class="date-box">
-          <label for="dayDate">Date</label>
-          <input type="date" id="dayDate" />
-        </div>
+        <span class="tag">30 days · 5 activities per day</span>
       </header>
 
       <div class="hint">
-<strong>12 fixed rows</strong> for this day. Type any activity name you want,
-        add a note if needed, and use the checkbox to mark it as done ✔
+        Type your own activity names in each cell. Tick the checkbox when you complete that activity for the day.
+        Data is saved automatically in this browser.
       </div>
 
       <div class="table-wrapper">
         <table>
           <thead>
             <tr>
-              <th class="col-index">#</th>
-              <th class="col-activity">Activity</th>
-              <th class="col-completed">Completed</th>
-              <th class="col-notes">Notes</th>
+              <th class="col-day">Day</th>
+              <th>Activity 1</th>
+              <th>Activity 2</th>
+              <th>Activity 3</th>
+              <th>Activity 4</th>
+              <th>Activity 5</th>
             </tr>
           </thead>
-          <tbody id="activityBody">
-            <!-- rows will be inserted by JS -->
+          <tbody id="tableBody">
+            <!-- Rows injected by JS -->
           </tbody>
         </table>
       </div>
 
-      <div class="footer-info">
-        <div>
-          <span id="summaryText">0 / 12 completed</span>
+      <div class="footer-bar">
+        <div class="summary" id="summaryText">
+          0 / 150 activities completed
         </div>
-        <div class="badge">
-          Data is saved automatically in this browser for each date.
+        <div class="button-row">
+          <button type="button" class="btn-soft" id="resetNames">
+            Clear all activity names
+          </button>
+          <button type="button" class="btn-danger" id="resetAll">
+            Clear everything (names + checkmarks)
+          </button>
         </div>
       </div>
     </div>
   </div>
 
   <script>
-    const ROW_COUNT = 12;
-    const STORAGE_KEY = "simple_daily_activity_table_v1";
+    const DAYS = 30;
+    const SLOTS = 5;
+    const STORAGE_KEY = "thirty_day_activity_tracker_v1";
 
-    const dayDateInput = document.getElementById("dayDate");
-    const tbody = document.getElementById("activityBody");
+    const tableBody = document.getElementById("tableBody");
     const summaryText = document.getElementById("summaryText");
+    const resetNamesBtn = document.getElementById("resetNames");
+    const resetAllBtn = document.getElementById("resetAll");
 
-    let allData = {}; // { "YYYY-MM-DD": [ {activity, done, notes}, ... ] }
+    // Data structure: [ { activities: [ { name, done }, ...5 ] }, ...30 days ]
+    let data = [];
 
-    function loadFromStorage() {
+    function loadData() {
       const raw = localStorage.getItem(STORAGE_KEY);
-      if (!raw) return {};
+      if (!raw) return null;
       try {
         return JSON.parse(raw);
       } catch {
-        return {};
+        return null;
       }
     }
 
-    function saveToStorage() {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(allData));
-    }
-
-    function getTodayISO() {
-      const now = new Date();
-      return now.toISOString().slice(0, 10);
-    }
-
-    function ensureDayData(date) {
-      if (!allData[date]) {
-        allData[date] = [];
+    function initData() {
+      const saved = loadData();
+      if (saved && Array.isArray(saved) && saved.length === DAYS) {
+        data = saved;
+      } else {
+        data = [];
+        for (let d = 0; d < DAYS; d++) {
+          const dayActivities = [];
+          for (let s = 0; s < SLOTS; s++) {
+            dayActivities.push({ name: "", done: false });
+          }
+          data.push({ activities: dayActivities });
+        }
       }
-      // ensure fixed ROW_COUNT
-      while (allData[date].length < ROW_COUNT) {
-        allData[date].push({
-          activity: "",
-          done: false,
-          notes: ""
+    }
+
+    function saveData() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+    }
+
+    function updateSummary() {
+      let completed = 0;
+      data.forEach((day) => {
+        day.activities.forEach((act) => {
+          if (act.done) completed++;
         });
-      }
-      if (allData[date].length > ROW_COUNT) {
-        allData[date] = allData[date].slice(0, ROW_COUNT);
-      }
+      });
+      const total = DAYS * SLOTS;
+      summaryText.textContent = `${completed} / ${total} activities completed`;
     }
 
-    function renderTable(date) {
-      ensureDayData(date);
-      const rows = allData[date];
+    function buildTable() {
+      tableBody.innerHTML = "";
 
-      tbody.innerHTML = "";
-      let completedCount = 0;
-
-      rows.forEach((row, index) => {
-        if (row.done) completedCount++;
-
+      for (let d = 0; d < DAYS; d++) {
         const tr = document.createElement("tr");
 
-        const tdIndex = document.createElement("td");
-        tdIndex.className = "col-index";
-        tdIndex.textContent = index + 1;
+        const tdDay = document.createElement("td");
+        tdDay.className = "col-day";
+        tdDay.textContent = d + 1;
+        tr.appendChild(tdDay);
 
-        const tdActivity = document.createElement("td");
-        tdActivity.className = "col-activity";
-        const activityInput = document.createElement("input");
-        activityInput.type = "text";
-        activityInput.value = row.activity || "";
-        activityInput.placeholder = "Type activity name...";
-        activityInput.addEventListener("input", (e) => {
-          allData[date][index].activity = e.target.value;
-          saveToStorage();
-        });
-        tdActivity.appendChild(activityInput);
+        for (let s = 0; s < SLOTS; s++) {
+          const td = document.createElement("td");
+          const wrapper = document.createElement("div");
+          wrapper.className = "activity-cell";
 
-        const tdCompleted = document.createElement("td");
-        tdCompleted.className = "col-completed";
-        const checkbox = document.createElement("input");
-        checkbox.type = "checkbox";
-        checkbox.checked = !!row.done;
-        checkbox.addEventListener("change", (e) => {
-          allData[date][index].done = e.target.checked;
-          saveToStorage();
-          updateSummary(date);
-        });
-        tdCompleted.appendChild(checkbox);
+          const checkbox = document.createElement("input");
+          checkbox.type = "checkbox";
+          checkbox.checked = !!data[d].activities[s].done;
+          checkbox.addEventListener("change", (e) => {
+            data[d].activities[s].done = e.target.checked;
+            saveData();
+            updateSummary();
+          });
 
-        const tdNotes = document.createElement("td");
-        tdNotes.className = "col-notes";
-        const notesInput = document.createElement("textarea");
-        notesInput.value = row.notes || "";
-        notesInput.placeholder = "Optional notes...";
-        notesInput.addEventListener("input", (e) => {
-          allData[date][index].notes = e.target.value;
-          saveToStorage();
-        });
-        tdNotes.appendChild(notesInput);
+          const input = document.createElement("input");
+          input.type = "text";
+          input.placeholder = "e.g. Trading practice";
+          input.value = data[d].activities[s].name || "";
+          input.addEventListener("input", (e) => {
+            data[d].activities[s].name = e.target.value;
+            saveData();
+          });
 
-        tr.appendChild(tdIndex);
-        tr.appendChild(tdActivity);
-        tr.appendChild(tdCompleted);
-        tr.appendChild(tdNotes);
+          wrapper.appendChild(checkbox);
+          wrapper.appendChild(input);
+          td.appendChild(wrapper);
+          tr.appendChild(td);
+        }
 
-        tbody.appendChild(tr);
-      });
+        tableBody.appendChild(tr);
+      }
 
-      summaryText.textContent = `${completedCount} / ${ROW_COUNT} completed`;
+      updateSummary();
     }
 
-    function updateSummary(date) {
-      ensureDayData(date);
-      const rows = allData[date];
-      let completedCount = 0;
-      rows.forEach((row) => {
-        if (row.done) completedCount++;
-      });
-      summaryText.textContent = `${completedCount} / ${ROW_COUNT} completed`;
-    }
-
-    // Init
-    allData = loadFromStorage();
-
-    const today = getTodayISO();
-    dayDateInput.value = today;
-
-    dayDateInput.addEventListener("change", () => {
-      const date = dayDateInput.value || today;
-      renderTable(date);
+    // Reset just names, keep completion state
+    resetNamesBtn.addEventListener("click", () => {
+      if (!confirm("Clear all activity names, but keep checkmarks?")) return;
+      for (let d = 0; d < DAYS; d++) {
+        for (let s = 0; s < SLOTS; s++) {
+          data[d].activities[s].name = "";
+        }
+      }
+      saveData();
+      buildTable();
     });
 
-    renderTable(today);
+    // Reset everything
+    resetAllBtn.addEventListener("click", () => {
+      if (!confirm("Clear everything (names + checkmarks) for all 30 days?")) return;
+      data = [];
+      for (let d = 0; d < DAYS; d++) {
+        const dayActivities = [];
+        for (let s = 0; s < SLOTS; s++) {
+          dayActivities.push({ name: "", done: false });
+        }
+        data.push({ activities: dayActivities });
+      }
+      saveData();
+      buildTable();
+    });
+
+    // Init
+    initData();
+    buildTable();
   </script>
 </body>
 </html>
