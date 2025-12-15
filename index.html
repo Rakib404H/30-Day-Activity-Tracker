@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>30-Day Activity Overview Tracker v8.html</title>
+  <title>Daily Activity Tracker</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <style>
     :root {
@@ -12,7 +12,7 @@
       --text-main: #111827;
       --text-muted: #6b7280;
       --accent: #2563eb;
-      --accent-soft: #e0ecff;
+      --accent-soft: #e0e4ff;
       --radius-lg: 12px;
       --radius-sm: 6px;
       --shadow-soft: 0 10px 30px rgba(15, 23, 42, 0.06);
@@ -75,13 +75,20 @@
     .hint {
       font-size: 12px;
       color: var(--text-muted);
+      margin-top: 4px;
       margin-bottom: 8px;
     }
 
     .credit {
       font-size: 11px;
       color: #9ca3af;
-      margin-top: 2px;
+      margin-top: 4px;
+    }
+
+    .credit a {
+      color: #2563eb;
+      font-weight: 600;
+      text-decoration: none;
     }
 
     .table-wrapper {
@@ -132,85 +139,75 @@
       font-weight: 600;
     }
 
-    /* Activity cells: dropdown + mini 4-step bar */
+    /* Activity cell as a single progress-bar field */
 
     .activity-cell {
       text-align: center;
     }
 
-    .activity-inner {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 4px;
-    }
-
-    .activity-select {
-      width: 100%;
-      max-width: 130px;
+    .activity-field {
+      position: relative;
       border-radius: var(--radius-sm);
       border: 1px solid var(--border);
-      padding: 5px 6px;
-      font-size: 12px;
-      font-family: inherit;
-      outline: none;
-      background: #f9fafb;
-      color: #374151;
-      transition: border-color 0.15s ease, box-shadow 0.15s ease,
-        background 0.15s ease, color 0.15s ease;
-    }
-
-    .activity-select:focus {
-      border-color: var(--accent);
-      box-shadow: 0 0 0 1px rgba(37, 99, 235, 0.1);
-      background: #ffffff;
-    }
-
-    .activity-progress {
-      width: 100%;
-      max-width: 120px;
+      height: 32px;
+      overflow: hidden;
       display: flex;
-      gap: 3px;
+      align-items: center;
       justify-content: center;
+      font-size: 11px;
+      color: #374151;
+      cursor: pointer;
+      background: #f3f4f6;
     }
 
-    .activity-progress-segment {
-      flex: 1;
-      height: 6px;
-      border-radius: 999px;
-      background: #e5e7eb;
-      opacity: 0.5;
-      transition: background 0.15s ease, opacity 0.15s ease, transform 0.1s ease;
+    .activity-fill {
+      position: absolute;
+      inset: 0;
+      width: 0%;
+      transition: width 0.25s ease, background 0.25s ease, opacity 0.15s ease;
+      opacity: 0.9;
     }
 
-    .activity-progress-segment.active {
-      opacity: 1;
-      transform: translateY(-0.3px);
+    .activity-label {
+      position: relative;
+      z-index: 1;
+      pointer-events: none;
+      padding: 0 6px;
+      white-space: nowrap;
     }
 
-    /* Color by stage for activity mini bars */
+    /* Stage colors for activity fill */
+    .activity-fill.stage-0 { background: #9ca3af; }   /* not set */
+    .activity-fill.stage-1 { background: #fed7aa; }   /* 25% */
+    .activity-fill.stage-2 { background: #facc15; }   /* 50% */
+    .activity-fill.stage-3 { background: #4ade80; }   /* 75% */
+    .activity-fill.stage-4 { background: #22c55e; }   /* 100% */
 
-    .activity-progress.stage-0 .activity-progress-segment.active {
-      background: #9ca3af;
+    /* Danger override for "Couldn't do today" */
+    .activity-fill.danger {
+      background: #fecaca !important;
     }
 
-    .activity-progress.stage-1 .activity-progress-segment.active {
-      background: #f97316;
+    /* Hidden dropdown over the whole field, arrow removed */
+    .activity-select {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      opacity: 0;
+      cursor: pointer;
+      border: none;
+      margin: 0;
+      padding: 0;
+      background: transparent;
+      -webkit-appearance: none;
+      -moz-appearance: none;
+      appearance: none;
+      background-image: none;
+      font-size: 13px;
     }
 
-    .activity-progress.stage-2 .activity-progress-segment.active {
-      background: #facc15;
-    }
-
-    .activity-progress.stage-3 .activity-progress-segment.active {
-      background: #22c55e;
-    }
-
-    .activity-progress.stage-4 .activity-progress-segment.active {
-      background: #16a34a;
-    }
-
-    /* Daily overview: linear progress bar */
+    /* Daily overview linear bar */
 
     .overview-cell {
       width: 220px;
@@ -238,34 +235,26 @@
       transition: width 0.2s ease, background 0.15s ease;
     }
 
-    .overview-linear.stage-0 .overview-linear-fill {
-      background: #9ca3af;
-    }
-
-    .overview-linear.stage-1 .overview-linear-fill {
-      background: #f97316;
-    }
-
-    .overview-linear.stage-2 .overview-linear-fill {
-      background: #facc15;
-    }
-
-    .overview-linear.stage-3 .overview-linear-fill {
-      background: #22c55e;
-    }
-
-    .overview-linear.stage-4 .overview-linear-fill {
-      background: #16a34a;
-    }
-
     .overview-linear-label {
       font-size: 11px;
       color: #6b7280;
     }
 
     .overview-linear-label strong {
-      color: #111827;
       font-weight: 500;
+      color: #111827;
+    }
+
+    /* Stage colors for overview fill */
+    .overview-linear.stage-0 .overview-linear-fill { background: #9ca3af; }
+    .overview-linear.stage-1 .overview-linear-fill { background: #f97316; }
+    .overview-linear.stage-2 .overview-linear-fill { background: #facc15; }
+    .overview-linear.stage-3 .overview-linear-fill { background: #22c55e; }
+    .overview-linear.stage-4 .overview-linear-fill { background: #16a34a; }
+
+    /* Danger override when the day is 0% (all zero-ish) */
+    .overview-linear.danger .overview-linear-fill {
+      background: #fecaca !important;
     }
 
     .footer-bar {
@@ -286,6 +275,18 @@
     .footer-credit {
       font-size: 11px;
       color: #9ca3af;
+    }
+
+    .footer-credit a {
+      color: #2563eb;
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    .footer-note {
+      font-size: 11px;
+      color: #6b7280;
+      margin-top: 2px;
     }
 
     button {
@@ -329,20 +330,24 @@
     <div class="card">
       <header>
         <div>
-          <h1>30-Day Activity Overview Tracker v8.html</h1>
+          <h1>Daily Activity Tracker</h1>
           <p>
-            Built for tracking key habits with visual feedback. Designed by <strong>Rakib Hossain</strong>.
+            Track five daily activities with visual completion bars per cell and a daily linear overview, tuned for your November routine.
           </p>
+          <div class="credit">
+            Concept & functionality by
+            <a href="https://rakibhossain.dev/" target="_blank">Rakib Hossain</a>.
+          </div>
         </div>
-        <span class="tag">30 days · 5 activities · visual per-cell + daily overview</span>
+        <span class="tag">30 days · November · custom goals</span>
       </header>
 
       <div class="hint">
         Activities per day: <strong>Trading</strong>, <strong>Coding</strong>, <strong>Automation</strong>,
-        <strong>Learning / Study</strong>, <strong>Workout</strong>.<br />
-        Each activity uses a dropdown: <em>Not set · Couldn't do today · 25% · 50% · 75% · 100%</em> and shows a
-        4-stage mini progress bar. The last column aggregates the day into a smooth linear bar.
-        <div class="credit">This habit tracker layout is crafted by Rakib Hossain.</div>
+        <strong>Self-Care</strong>, <strong>Prayer</strong>.<br />
+        Each cell is a mini progress bar controlled by a hidden dropdown:
+        <em>Not set · Couldn't do today · 25% · 50% · 75% · 100%</em> (with a stronger red state if you couldn't start).  
+        Daily completion is auto-calculated and shown as a linear bar (no numbers).
       </div>
 
       <div class="table-wrapper">
@@ -353,24 +358,24 @@
               <th>Trading</th>
               <th>Coding</th>
               <th>Automation</th>
-              <th>Learning / Study</th>
-              <th>Workout</th>
+              <th>Self-Care</th>
+              <th>Prayer</th>
               <th>Daily completion overview</th>
             </tr>
           </thead>
-          <tbody id="tableBody">
-            <!-- rows from JS -->
-          </tbody>
+          <tbody id="tableBody"></tbody>
         </table>
       </div>
 
       <div class="footer-bar">
         <div>
-          <div class="summary" id="summaryText">
-            No data yet
-          </div>
+          <div class="summary" id="summaryText">No data yet.</div>
           <div class="footer-credit">
-            Tracker logic & structure customized by Rakib Hossain.
+            Concept-driven tracker flow by
+            <a href="https://rakibhossain.dev/" target="_blank">Rakib Hossain</a>.
+          </div>
+          <div class="footer-note">
+            All activities are configured as customized goals for the month of <strong>November</strong>.
           </div>
         </div>
         <button type="button" class="btn-danger" id="resetAll">
@@ -382,40 +387,30 @@
 
   <script>
     const DAYS = 30;
-    const ACTIVITIES = [
-      "trading",
-      "coding",
-      "automation",
-      "learning",
-      "workout",
-    ];
-    const STORAGE_KEY = "thirty_day_activity_overview_bar_v8";
+    const ACTIVITIES = ["trading","coding","automation","selfCare","prayer"];
+    const STORAGE_KEY = "november_activity_tracker_v8";
 
     const tableBody = document.getElementById("tableBody");
     const summaryText = document.getElementById("summaryText");
     const resetAllBtn = document.getElementById("resetAll");
 
-    // Activity dropdown options
+    // Dropdown options (nicer labels for the menu)
     const ACTIVITY_OPTIONS = [
-      { value: "none", label: "Not set" },
-      { value: "unable", label: "Couldn't do today" },
-      { value: "25", label: "25%" },
-      { value: "50", label: "50%" },
-      { value: "75", label: "75%" },
-      { value: "100", label: "100%" },
+      { value: "none",   label: "⚪ Not set",               pct: 0 },
+      { value: "unable", label: "⛔ Couldn't do today",     pct: 0 },
+      { value: "25",     label: "🟡 25% done",             pct: 25 },
+      { value: "50",     label: "🟡 50% done",             pct: 50 },
+      { value: "75",     label: "🟢 75% done",             pct: 75 },
+      { value: "100",    label: "✅ 100% completed",       pct: 100 },
     ];
 
-    // data[dayIndex] = { activities: [...], overview: null|number }
+    // data[dayIndex] = { activities: [...], overview: number|null }
     let data = [];
 
     function loadData() {
       const raw = localStorage.getItem(STORAGE_KEY);
       if (!raw) return null;
-      try {
-        return JSON.parse(raw);
-      } catch {
-        return null;
-      }
+      try { return JSON.parse(raw); } catch { return null; }
     }
 
     function initData() {
@@ -442,72 +437,66 @@
       localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
     }
 
-    // Map activity value to 4-step stage for mini bar
+    function getPctFromValue(value) {
+      const opt = ACTIVITY_OPTIONS.find(o => o.value === value);
+      return opt ? opt.pct : 0;
+    }
+
     function stageFromActivityValue(value) {
       switch (value) {
-        case "25":
-          return { stage: 1, label: "25% done" };
-        case "50":
-          return { stage: 2, label: "50% done" };
-        case "75":
-          return { stage: 3, label: "75% done" };
-        case "100":
-          return { stage: 4, label: "Completed" };
-        case "unable":
-          return { stage: 0, label: "Skipped" };
-        default:
-          return { stage: 0, label: "Not set" };
+        case "25":   return { stage: 1, label: "25% done" };
+        case "50":   return { stage: 2, label: "50% done" };
+        case "75":   return { stage: 3, label: "75% done" };
+        case "100":  return { stage: 4, label: "Completed" };
+        case "unable": return { stage: 0, label: "Couldn't do today" };
+        default:     return { stage: 0, label: "Not set" };
       }
     }
 
-    // Map numeric overview (0–100) to stage + label for daily linear bar
     function stageFromOverview(overview) {
       if (overview === null || isNaN(overview)) {
-        return { stage: 0, label: "Not set" };
+        return { stage: 0, label: "Not set", danger: false };
       }
       if (overview === 0) {
-        return { stage: 0, label: "No progress" };
+        return { stage: 0, label: "No progress", danger: true };
       }
       if (overview < 40) {
-        return { stage: 1, label: "Light progress" };
+        return { stage: 1, label: "Light progress", danger: false };
       }
       if (overview < 70) {
-        return { stage: 2, label: "Moderate progress" };
+        return { stage: 2, label: "Moderate progress", danger: false };
       }
       if (overview < 100) {
-        return { stage: 3, label: "Strong progress" };
+        return { stage: 3, label: "Strong progress", danger: false };
       }
-      return { stage: 4, label: "Perfect day" };
+      return { stage: 4, label: "Perfect day", danger: false };
     }
 
-    // Update mini 4-step bar for a single activity cell
-    function updateActivityProgress(dayIndex, activityIndex) {
+    function updateActivityCell(dayIndex, activityIndex) {
       const val = data[dayIndex].activities[activityIndex];
+      const pct = getPctFromValue(val);
       const { stage, label } = stageFromActivityValue(val);
-      const progress = document.querySelector(
-        `div[data-activity-progress="${dayIndex}-${activityIndex}"]`
+
+      const select = document.querySelector(
+        `select[data-day="${dayIndex}"][data-activity="${activityIndex}"]`
       );
-      if (!progress) return;
-      progress.classList.remove(
-        "stage-0",
-        "stage-1",
-        "stage-2",
-        "stage-3",
-        "stage-4"
-      );
-      progress.classList.add(`stage-${stage}`);
-      const segments = progress.querySelectorAll(".activity-progress-segment");
-      segments.forEach((seg, idx) => {
-        if (idx < stage) {
-          seg.classList.add("active");
-        } else {
-          seg.classList.remove("active");
-        }
-      });
-      progress.title = label;
+      if (!select) return;
+
+      const field = select.parentNode;
+      const fill = field.querySelector(".activity-fill");
+      const labelEl = field.querySelector(".activity-label");
+
+      // Width logic: normal % for progress, but full-width red for "Couldn't do today"
+      let width = pct;
+      if (val === "unable") {
+        width = 100; // visually strong "fail" state
+      }
+
+      fill.style.width = width + "%";
+      fill.className = "activity-fill stage-" + stage + (val === "unable" ? " danger" : "");
+      labelEl.textContent = label;
     }
 
-    // Calculate and update overview for a specific day
     function updateOverviewForDay(dayIndex) {
       const day = data[dayIndex];
       let sum = 0;
@@ -515,74 +504,56 @@
       let allZero = true;
 
       day.activities.forEach((val) => {
-        if (val === "none") {
-          return;
-        }
-        if (val === "unable") {
-          sum += 0;
-          count++;
-          return;
-        }
-        const num = parseInt(val, 10);
-        if (!isNaN(num)) {
-          sum += num;
-          count++;
-          if (num > 0) allZero = false;
-        }
+        const pct = getPctFromValue(val);
+        if (val === "none") return;
+        count++;
+        sum += pct;
+        if (pct > 0) allZero = false;
       });
 
       let overview = null;
       if (count > 0) {
         overview = Math.round(sum / count);
-        if (allZero && overview > 0) overview = 0;
+        if (allZero) overview = 0;
       } else {
         overview = null;
       }
-
       day.overview = overview;
 
       const wrap = document.querySelector(
         `div[data-overview-linear="${dayIndex}"]`
       );
       if (!wrap) return;
-
       const fill = wrap.querySelector(".overview-linear-fill");
       const labelEl = wrap.querySelector(".overview-linear-label");
-      const { stage, label } = stageFromOverview(overview);
 
-      wrap.classList.remove(
-        "stage-0",
-        "stage-1",
-        "stage-2",
-        "stage-3",
-        "stage-4"
-      );
-      wrap.classList.add(`stage-${stage}`);
+      const { stage, label, danger } = stageFromOverview(overview);
+      wrap.className = "overview-linear stage-" + stage + (danger ? " danger" : "");
 
       const width = overview === null || isNaN(overview) ? 0 : overview;
-      fill.style.width = `${width}%`;
+      fill.style.width = width + "%";
       labelEl.innerHTML = `<strong>${label}</strong>`;
     }
 
     function updateSummary() {
-      let daysWithOverview = 0;
-      let sumOverview = 0;
-      let perfectDays = 0;
+      let daysWith = 0;
+      let sum = 0;
+      let perfect = 0;
 
       data.forEach((day) => {
         if (day.overview !== null && !isNaN(day.overview)) {
-          daysWithOverview++;
-          sumOverview += day.overview;
-          if (day.overview === 100) perfectDays++;
+          daysWith++;
+          sum += day.overview;
+          if (day.overview === 100) perfect++;
         }
       });
 
-      if (daysWithOverview === 0) {
+      if (daysWith === 0) {
         summaryText.textContent = "No daily completion data yet.";
       } else {
-        const avg = Math.round(sumOverview / daysWithOverview);
+        const avg = Math.round(sum / daysWith);
         summaryText.textContent =
-          `Average completion: ${avg}% · 100% days: ${perfectDays}`;
+          `Average completion: ${avg}% · 100% days: ${perfect}`;
       }
     }
 
@@ -592,19 +563,26 @@
       for (let d = 0; d < DAYS; d++) {
         const tr = document.createElement("tr");
 
-        // Day number
         const tdDay = document.createElement("td");
         tdDay.className = "col-day";
         tdDay.textContent = d + 1;
         tr.appendChild(tdDay);
 
-        // Activity cells
         ACTIVITIES.forEach((_, aIndex) => {
           const td = document.createElement("td");
           td.className = "activity-cell";
 
-          const inner = document.createElement("div");
-          inner.className = "activity-inner";
+          const field = document.createElement("div");
+          field.className = "activity-field";
+
+          const fill = document.createElement("div");
+          fill.className = "activity-fill";
+          field.appendChild(fill);
+
+          const label = document.createElement("span");
+          label.className = "activity-label";
+          label.textContent = "Not set";
+          field.appendChild(label);
 
           const select = document.createElement("select");
           select.className = "activity-select";
@@ -623,32 +601,17 @@
           select.addEventListener("change", (e) => {
             const value = e.target.value;
             data[d].activities[aIndex] = value;
-            updateActivityProgress(d, aIndex);
+            updateActivityCell(d, aIndex);
             updateOverviewForDay(d);
             saveData();
             updateSummary();
           });
 
-          const progress = document.createElement("div");
-          progress.className = "activity-progress stage-0";
-          progress.setAttribute(
-            "data-activity-progress",
-            `${d}-${aIndex}`
-          );
-
-          for (let i = 0; i < 4; i++) {
-            const seg = document.createElement("div");
-            seg.className = "activity-progress-segment";
-            progress.appendChild(seg);
-          }
-
-          inner.appendChild(select);
-          inner.appendChild(progress);
-          td.appendChild(inner);
+          field.appendChild(select);
+          td.appendChild(field);
           tr.appendChild(td);
         });
 
-        // Overview cell (linear bar)
         const tdOverview = document.createElement("td");
         tdOverview.className = "overview-cell";
 
@@ -659,26 +622,26 @@
         const track = document.createElement("div");
         track.className = "overview-linear-track";
 
-        const fill = document.createElement("div");
-        fill.className = "overview-linear-fill";
-        track.appendChild(fill);
+        const ofill = document.createElement("div");
+        ofill.className = "overview-linear-fill";
+        track.appendChild(ofill);
 
-        const label = document.createElement("div");
-        label.className = "overview-linear-label";
-        label.textContent = "Not set";
+        const olabel = document.createElement("div");
+        olabel.className = "overview-linear-label";
+        olabel.textContent = "Not set";
 
         overviewWrap.appendChild(track);
-        overviewWrap.appendChild(label);
+        overviewWrap.appendChild(olabel);
         tdOverview.appendChild(overviewWrap);
         tr.appendChild(tdOverview);
 
         tableBody.appendChild(tr);
       }
 
-      // Sync visuals with current data
+      // Now that everything is in the DOM, update visuals
       for (let d = 0; d < DAYS; d++) {
         for (let aIndex = 0; aIndex < ACTIVITIES.length; aIndex++) {
-          updateActivityProgress(d, aIndex);
+          updateActivityCell(d, aIndex);
         }
         updateOverviewForDay(d);
       }
@@ -698,7 +661,6 @@
       buildTable();
     });
 
-    // Init
     initData();
     buildTable();
   </script>
