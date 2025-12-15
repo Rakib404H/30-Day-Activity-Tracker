@@ -3,7 +3,7 @@
 
 A lightweight, browser-first tracker that started as a simple “daily journal” idea and evolved into a polished monthly activity system with visual progress, streaks, customization, and comparison.
 
-**Live demo:** `https://rakibhossain.dev/activity-tracker/`
+**Live demo:**  <a href="https://rakibhossain.dev/activity-tracker/" target="blank"> alt="Live demo" />https://rakibhossain.dev/activity-tracker/</a>
 
 ---
 
@@ -33,33 +33,32 @@ If you clear browser cache/cookies/site data, your saved activities and progress
 
 ## Version journey (v1.0 → v2.0)
 
-> Add your screenshots using the placeholders below (recommended path: `versions/`).
 
 ### v1.0 — The original “Daily Journal” idea
 - First working version focused on logging daily activity entries.
 
-**Screenshot:** `![v1.0](https://github.com/Rakib404H/30-Day-Activity-Tracker/blob/a855025d7d1c9e26b0bfd579a4b6c254c7369fb6/resources/v1.0.png)`
+**Screenshot:** `![v1.0](https://raw.githubusercontent.com/Rakib404H/30-Day-Activity-Tracker/refs/heads/main/resources/v1.0.png)`
 
 ---
 
 ### v1.1 — Table-style layout
 - Reframed the experience with a cleaner, structured **table look** for readability.
 
-**Screenshot:** `![v1.1](https://github.com/Rakib404H/30-Day-Activity-Tracker/blob/a855025d7d1c9e26b0bfd579a4b6c254c7369fb6/resources/v1.1.png)`
+**Screenshot:** `![v1.1](https://raw.githubusercontent.com/Rakib404H/30-Day-Activity-Tracker/refs/heads/main/resources/v1.1.png)`
 
 ---
 
 ### v1.2 — UI/UX refresh + 5-activity column system
 - Major layout shift into a **5 activity-column view** for a more consistent daily structure.
 
-**Screenshot:** `![v1.2](https://github.com/Rakib404H/30-Day-Activity-Tracker/blob/a855025d7d1c9e26b0bfd579a4b6c254c7369fb6/resources/v1.2.png)`
+**Screenshot:** `![v1.2](https://raw.githubusercontent.com/Rakib404H/30-Day-Activity-Tracker/refs/heads/main/resources/v1.2.png)`
 
 ---
 
 ### v1.3 — Colored dropdown activity selection
 - Introduced **color-coded dropdowns** to make selection faster and scanning easier.
 
-**Screenshot:** `![v1.3](https://github.com/Rakib404H/30-Day-Activity-Tracker/blob/a855025d7d1c9e26b0bfd579a4b6c254c7369fb6/resources/v1.3.png)`
+**Screenshot:** `![v1.3](https://raw.githubusercontent.com/Rakib404H/30-Day-Activity-Tracker/refs/heads/main/resources/v1.3.png)`
 
 ---
 
@@ -67,7 +66,7 @@ If you clear browser cache/cookies/site data, your saved activities and progress
 - Locked activity names and added **checkbox completion**
 - Added a **daily overall completion percentage** option
 
-**Screenshot:** `![v1.4](https://github.com/Rakib404H/30-Day-Activity-Tracker/blob/a855025d7d1c9e26b0bfd579a4b6c254c7369fb6/resources/v1.4.png)`
+**Screenshot:** `![v1.4](https://raw.githubusercontent.com/Rakib404H/30-Day-Activity-Tracker/refs/heads/main/resources/v1.4.png)`
 
 ---
 
@@ -75,14 +74,14 @@ If you clear browser cache/cookies/site data, your saved activities and progress
 - Updated the UX so **each activity has its own % dropdown**
 - Daily completion overview shown as **percentage**
 
-**Screenshot:** `![v1.5](https://github.com/Rakib404H/30-Day-Activity-Tracker/blob/a855025d7d1c9e26b0bfd579a4b6c254c7369fb6/resources/v1.5.png)`
+**Screenshot:** `![v1.5](https://raw.githubusercontent.com/Rakib404H/30-Day-Activity-Tracker/refs/heads/main/resources/v1.5.png)`
 
 ---
 
 ### v1.6 — Dashed-style daily completion overview
 - Changed the daily completion overview into a **dashed progress bar** style for quicker visual interpretation.
 
-**Screenshot:** `![v1.6](https://github.com/Rakib404H/30-Day-Activity-Tracker/blob/a855025d7d1c9e26b0bfd579a4b6c254c7369fb6/resources/v1.6.png)`
+**Screenshot:** `![v1.6](https://raw.githubusercontent.com/Rakib404H/30-Day-Activity-Tracker/refs/heads/main/resources/v1.6.png)`
 
 ---
 
@@ -91,7 +90,7 @@ If you clear browser cache/cookies/site data, your saved activities and progress
 - Implemented **meaningful color logic**
 - Introduced a **smooth linear daily completion bar**
 
-**Screenshot:** `![v1.7](https://github.com/Rakib404H/30-Day-Activity-Tracker/blob/a855025d7d1c9e26b0bfd579a4b6c254c7369fb6/resources/v1.7.png)`
+**Screenshot:** `![v1.7](https://raw.githubusercontent.com/Rakib404H/30-Day-Activity-Tracker/refs/heads/main/resources/v1.7.png)`
 
 ---
 
@@ -99,7 +98,7 @@ If you clear browser cache/cookies/site data, your saved activities and progress
 - Major visual redesign with **color-themed progress dropdown options**
 - Focused on making each activity cell feel more “guided” and clear
 
-**Screenshot:** `![v1.8](https://github.com/Rakib404H/30-Day-Activity-Tracker/blob/a855025d7d1c9e26b0bfd579a4b6c254c7369fb6/resources/v1.8.png)`
+**Screenshot:** `![v1.8](https://raw.githubusercontent.com/Rakib404H/30-Day-Activity-Tracker/refs/heads/main/resources/v1.8.png)`
 
 ---
 
@@ -108,7 +107,7 @@ If you clear browser cache/cookies/site data, your saved activities and progress
 - Added **Customize** so users can rename activities (because not everyone is a trader/coder)
 - Strong step toward making this a public-friendly tool
 
-**Screenshot:** `![v1.9](https://github.com/Rakib404H/30-Day-Activity-Tracker/blob/a855025d7d1c9e26b0bfd579a4b6c254c7369fb6/resources/v1.9.png)`
+**Screenshot:** `![v1.9](https://raw.githubusercontent.com/Rakib404H/30-Day-Activity-Tracker/refs/heads/main/resources/v1.9.png)`
 
 ---
 
@@ -118,7 +117,7 @@ If you clear browser cache/cookies/site data, your saved activities and progress
 - Added **streak** and **monthly completion summary** at the top for stronger motivation and faster insights
 - This is the current public version hosted on my site
 
-**Screenshot:** `![v2.0](https://github.com/Rakib404H/30-Day-Activity-Tracker/blob/a855025d7d1c9e26b0bfd579a4b6c254c7369fb6/resources/v2.0.png)`
+**Screenshot:** `![v2.0](https://raw.githubusercontent.com/Rakib404H/30-Day-Activity-Tracker/refs/heads/main/resources/v2.0.png)`
 
 ---
 
