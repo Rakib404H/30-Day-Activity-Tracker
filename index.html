@@ -12,10 +12,10 @@
       --text-main: #111827;
       --text-muted: #6b7280;
       --accent: #2563eb;
-      --accent-soft: #e0e4ff;
-      --radius-lg: 12px;
-      --radius-sm: 6px;
-      --shadow-soft: 0 10px 30px rgba(15, 23, 42, 0.06);
+      --accent-soft: #e0ecff;
+      --radius-lg: 16px;
+      --radius-sm: 8px;
+      --shadow-soft: 0 12px 30px rgba(15, 23, 42, 0.08);
     }
 
     * { box-sizing: border-box; }
@@ -29,24 +29,25 @@
     }
 
     .app {
-      max-width: 1100px;
-      margin: 32px auto;
+      max-width: 1120px;
+      margin: 24px auto 32px;
       padding: 0 16px;
     }
 
     .card {
       background: var(--surface);
-      border-radius: 16px;
+      border-radius: var(--radius-lg);
       padding: 20px;
       box-shadow: var(--shadow-soft);
-      border: 1px solid rgba(148, 163, 184, 0.2);
+      border: 1px solid rgba(148, 163, 184, 0.25);
+      margin-bottom: 16px;
     }
 
     header {
-      margin-bottom: 14px;
+      margin-bottom: 16px;
       display: flex;
       justify-content: space-between;
-      align-items: center;
+      align-items: flex-start;
       gap: 12px;
       flex-wrap: wrap;
     }
@@ -72,13 +73,6 @@
       white-space: nowrap;
     }
 
-    .hint {
-      font-size: 12px;
-      color: var(--text-muted);
-      margin-top: 4px;
-      margin-bottom: 8px;
-    }
-
     .credit {
       font-size: 11px;
       color: #9ca3af;
@@ -91,11 +85,87 @@
       text-decoration: none;
     }
 
+    .controls-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px 16px;
+      align-items: center;
+      margin-bottom: 8px;
+      font-size: 12px;
+    }
+
+    .controls-row label {
+      font-size: 12px;
+      color: var(--text-muted);
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    input[type="month"],
+    select {
+      font-family: inherit;
+      font-size: 12px;
+      padding: 4px 8px;
+      border-radius: 6px;
+      border: 1px solid var(--border);
+      background: #f9fafb;
+      color: var(--text-main);
+    }
+
+    .controls-right {
+      margin-left: auto;
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      font-family: inherit;
+      font-size: 12px;
+      border-radius: 999px;
+      padding: 6px 12px;
+      border: none;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: background 0.15s ease, box-shadow 0.15s ease,
+        transform 0.05s ease;
+    }
+
+    .btn-primary {
+      background: #2563eb;
+      color: #f9fafb;
+      box-shadow: 0 8px 18px rgba(37, 99, 235, 0.25);
+    }
+
+    .btn-primary:hover {
+      background: #1d4ed8;
+    }
+
+    .btn-ghost {
+      background: #f3f4f6;
+      color: #374151;
+      border: 1px solid #e5e7eb;
+    }
+
+    .btn-ghost:hover {
+      background: #e5e7eb;
+    }
+
+    .btn:active {
+      transform: translateY(1px);
+      box-shadow: none;
+    }
+
     .table-wrapper {
-      border-radius: var(--radius-lg);
+      border-radius: 12px;
       border: 1px solid var(--border);
       overflow-x: auto;
       background: #ffffff;
+      margin-top: 6px;
     }
 
     table {
@@ -139,6 +209,40 @@
       font-weight: 600;
     }
 
+    .activity-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 4px;
+    }
+
+    .activity-title {
+      font-size: 11px;
+      text-transform: none;
+      letter-spacing: normal;
+      color: #111827;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .header-actions {
+      display: inline-flex;
+      gap: 2px;
+    }
+
+    .icon-btn {
+      border: none;
+      background: transparent;
+      cursor: pointer;
+      padding: 2px;
+      font-size: 11px;
+      color: #9ca3af;
+    }
+
+    .icon-btn:hover {
+      color: #4b5563;
+    }
+
     /* Activity cell as a single progress-bar field */
 
     .activity-cell {
@@ -147,7 +251,7 @@
 
     .activity-field {
       position: relative;
-      border-radius: var(--radius-sm);
+      border-radius: 6px;
       border: 1px solid var(--border);
       height: 32px;
       overflow: hidden;
@@ -252,7 +356,6 @@
     .overview-linear.stage-3 .overview-linear-fill { background: #22c55e; }
     .overview-linear.stage-4 .overview-linear-fill { background: #16a34a; }
 
-    /* Danger override when the day is 0% (all zero-ish) */
     .overview-linear.danger .overview-linear-fill {
       background: #fecaca !important;
     }
@@ -272,6 +375,12 @@
       font-weight: 500;
     }
 
+    .footer-note {
+      font-size: 11px;
+      color: #6b7280;
+      margin-top: 2px;
+    }
+
     .footer-credit {
       font-size: 11px;
       color: #9ca3af;
@@ -283,44 +392,113 @@
       font-weight: 600;
     }
 
-    .footer-note {
+    .compare-bar {
+      margin-top: 8px;
+      padding: 8px 10px;
+      border-radius: 10px;
+      background: #f9fafb;
+      border: 1px dashed #e5e7eb;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px 16px;
+      align-items: center;
+      font-size: 12px;
+      color: #4b5563;
+    }
+
+    .compare-summary-strong {
+      font-weight: 600;
+    }
+
+    /* Year overview */
+
+    .year-header {
+      margin-bottom: 10px;
+    }
+
+    .year-header h2 {
+      margin: 0;
+      font-size: 18px;
+    }
+
+    .year-header p {
+      margin: 4px 0 0;
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    .year-progress-wrap {
+      margin-bottom: 10px;
+    }
+
+    .year-progress-label {
+      font-size: 12px;
+      color: #4b5563;
+      margin-bottom: 4px;
+    }
+
+    .year-progress-track {
+      width: 100%;
+      height: 9px;
+      border-radius: 999px;
+      background: #e5e7eb;
+      overflow: hidden;
+    }
+
+    .year-progress-fill {
+      height: 100%;
+      width: 0%;
+      border-radius: inherit;
+      background: #2563eb;
+      transition: width 0.25s ease;
+    }
+
+    .year-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 10px;
+    }
+
+    .year-month-card {
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      padding: 8px 10px;
+      background: #f9fafb;
+      font-size: 12px;
+      cursor: pointer;
+      transition: background 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
+    }
+
+    .year-month-card:hover {
+      background: #eef2ff;
+      border-color: #c7d2fe;
+      box-shadow: 0 4px 12px rgba(37, 99, 235, 0.15);
+    }
+
+    .year-month-title {
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+
+    .year-month-main {
+      font-size: 16px;
+      font-weight: 600;
+    }
+
+    .year-month-meta {
       font-size: 11px;
       color: #6b7280;
       margin-top: 2px;
     }
 
-    button {
-      font-family: inherit;
-      font-size: 12px;
-      border-radius: 999px;
-      border: none;
-      padding: 6px 12px;
-      cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      gap: 5px;
-      transition: background 0.15s ease, box-shadow 0.15s ease,
-        transform 0.05s ease;
+    .year-month-card.is-compare {
+      border-color: #2563eb;
+      background: #e0ecff;
     }
 
-    button:active {
-      transform: translateY(1px);
-      box-shadow: none;
-    }
-
-    .btn-danger {
-      background: rgba(220, 38, 38, 0.08);
-      color: #b91c1c;
-    }
-
-    .btn-danger:hover {
-      background: rgba(220, 38, 38, 0.15);
-    }
-
-    /* Mobile compact layout */
     @media (max-width: 640px) {
       .app {
-        margin: 16px auto;
+        margin: 16px auto 24px;
         padding: 0 8px;
       }
 
@@ -337,10 +515,6 @@
         font-size: 12px;
       }
 
-      .hint {
-        font-size: 11px;
-      }
-
       th,
       td {
         padding: 4px 4px;
@@ -353,123 +527,296 @@
       }
 
       .overview-cell {
-        width: 160px;
+        width: 180px;
       }
 
       .table-wrapper {
         border-radius: 10px;
       }
     }
+
+    /* Customize mode visibility */
+
+    .customize-off .customize-only {
+      display: none !important;
+    }
+
+    .customize-off .header-actions {
+      display: none !important;
+    }
+
+    .customize-on .customize-only {
+      display: inline-flex;
+    }
+
+    .customize-on .header-actions {
+      display: inline-flex;
+    }
+
+    /* Compare-locked: inputs disabled */
+
+    .compare-locked .activity-field {
+      opacity: 0.65;
+      cursor: not-allowed;
+    }
   </style>
 </head>
 <body>
-  <div class="app">
+  <div class="app customize-off" id="appRoot">
+    <!-- Main tracker card -->
     <div class="card">
       <header>
         <div>
-          <h1>November Daily Activity Tracker</h1>
+          <h1>Daily Activity Tracker</h1>
           <p>
-            Track five daily activities with visual completion bars per cell and a daily linear overview, tuned for your November routine.
+            Customisable daily activities with monthly views, correct day counts, visual completion, and streak insights.
           </p>
           <div class="credit">
-            Concept & functionality by
+            Designed and iterated as a personal tracking tool by
             <a href="https://rakibhossain.dev/" target="_blank">Rakib Hossain</a>.
           </div>
         </div>
-        <span class="tag">30 days · November · custom goals</span>
+        <span class="tag">Custom activities · Monthly view · Compare & streaks</span>
       </header>
 
-      <div class="hint">
-        Activities per day: <strong>Trading</strong>, <strong>Coding</strong>, <strong>Automation</strong>,
-        <strong>Self-Care</strong>, <strong>Prayer</strong>.<br />
-        Each cell is a mini progress bar controlled by a hidden dropdown:
-        <em>Not set · Couldn't do today · 25% · 50% · 75% · 100%</em> (with a stronger red state if you couldn't start).  
-        Daily completion is auto-calculated and shown as a linear bar (no numbers).
+      <div class="controls-row">
+        <label>
+          Month
+          <input type="month" id="monthPicker">
+        </label>
+
+        <label>
+          Compare with
+          <select id="compareSelect">
+            <option value="">None</option>
+          </select>
+        </label>
+
+        <div class="controls-right">
+          <button class="btn btn-ghost" id="customizeToggle">
+            ⚙ Customize
+          </button>
+          <button class="btn btn-primary customize-only" id="addActivityBtn">
+            + Add activity column
+          </button>
+        </div>
       </div>
 
       <div class="table-wrapper">
         <table>
-          <thead>
-            <tr>
-              <th class="col-day">Day</th>
-              <th>Trading</th>
-              <th>Coding</th>
-              <th>Automation</th>
-              <th>Self-Care</th>
-              <th>Prayer</th>
-              <th>Daily completion overview</th>
-            </tr>
-          </thead>
+          <thead id="tableHead"></thead>
           <tbody id="tableBody"></tbody>
         </table>
+      </div>
+
+      <div class="compare-bar">
+        <span id="compareSummary">
+          Select another month or click a month card below to compare your average completion, streaks, and consistency.
+        </span>
       </div>
 
       <div class="footer-bar">
         <div>
           <div class="summary" id="summaryText">No data yet.</div>
+          <div class="footer-note">
+            Activities and layout are shared across months. Each month keeps its own progress, streaks, and averages.
+          </div>
           <div class="footer-credit">
-            Concept-driven tracker flow by
+            Daily Activity Tracker v3.1 · Designed for year-round tracking by
             <a href="https://rakibhossain.dev/" target="_blank">Rakib Hossain</a>.
           </div>
-          <div class="footer-note">
-            All activities are configured as customised goals for the month of <strong>November</strong>.
-          </div>
         </div>
-        <button type="button" class="btn-danger" id="resetAll">
-          Clear all 30 days
+        <button type="button" class="btn btn-ghost" id="resetCurrentMonth">
+          Clear current month
         </button>
       </div>
+    </div>
+
+    <!-- Year overview dashboard -->
+    <div class="card">
+      <div class="year-header">
+        <h2>Year overview</h2>
+        <p>
+          Monthly summary with average completion, days tracked, perfect days, and longest streak per month.
+        </p>
+      </div>
+
+      <div class="year-progress-wrap">
+        <div class="year-progress-label" id="yearProgressLabel">
+          No tracked days yet. Once you log activity, this will show your yearly average completion.
+        </div>
+        <div class="year-progress-track">
+          <div class="year-progress-fill" id="yearProgressFill"></div>
+        </div>
+      </div>
+
+      <div id="yearGrid" class="year-grid"></div>
     </div>
   </div>
 
   <script>
-    const DAYS = 30;
-    const ACTIVITIES = ["trading","coding","automation","selfCare","prayer"];
-    const STORAGE_KEY = "november_activity_tracker_v8";
-
-    const tableBody = document.getElementById("tableBody");
-    const summaryText = document.getElementById("summaryText");
-    const resetAllBtn = document.getElementById("resetAll");
+    const STORAGE_KEY = "daily_activity_tracker_v3_0";
 
     const ACTIVITY_OPTIONS = [
-      { value: "none",   label: "⚪ Not set",               pct: 0 },
-      { value: "unable", label: "⛔ Couldn't do today",     pct: 0 },
-      { value: "25",     label: "🟡 25% done",             pct: 25 },
-      { value: "50",     label: "🟡 50% done",             pct: 50 },
-      { value: "75",     label: "🟢 75% done",             pct: 75 },
-      { value: "100",    label: "✅ 100% completed",       pct: 100 },
+      { value: "none",   label: "⚪ Not set",              pct: 0 },
+      { value: "unable", label: "⛔ Couldn't do today",    pct: 0 },
+      { value: "25",     label: "🟡 25% done",            pct: 25 },
+      { value: "50",     label: "🟡 50% done",            pct: 50 },
+      { value: "75",     label: "🟢 75% done",            pct: 75 },
+      { value: "100",    label: "✅ 100% completed",      pct: 100 },
     ];
 
-    let data = [];
+    const monthPicker = document.getElementById("monthPicker");
+    const compareSelect = document.getElementById("compareSelect");
+    const tableHead = document.getElementById("tableHead");
+    const tableBody = document.getElementById("tableBody");
+    const addActivityBtn = document.getElementById("addActivityBtn");
+    const summaryText = document.getElementById("summaryText");
+    const compareSummary = document.getElementById("compareSummary");
+    const resetCurrentMonthBtn = document.getElementById("resetCurrentMonth");
+    const yearGrid = document.getElementById("yearGrid");
+    const yearProgressLabel = document.getElementById("yearProgressLabel");
+    const yearProgressFill = document.getElementById("yearProgressFill");
+    const customizeToggle = document.getElementById("customizeToggle");
+    const appRoot = document.getElementById("appRoot");
 
-    function loadData() {
-      const raw = localStorage.getItem(STORAGE_KEY);
-      if (!raw) return null;
-      try { return JSON.parse(raw); } catch { return null; }
+    let state = null;
+    let currentMonthKey = null;
+    let customizeMode = false;
+
+    function getMonthKey(year, monthIndex) {
+      return `${year}-${String(monthIndex + 1).padStart(2, "0")}`;
     }
 
-    function initData() {
-      const saved = loadData();
-      if (
-        saved &&
-        Array.isArray(saved) &&
-        saved.length === DAYS &&
-        saved.every((d) => Array.isArray(d.activities))
-      ) {
-        data = saved;
+    function getDaysInMonth(year, monthIndex) {
+      return new Date(year, monthIndex + 1, 0).getDate();
+    }
+
+    function loadState() {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (!raw) return null;
+      try {
+        const parsed = JSON.parse(raw);
+        return parsed && typeof parsed === "object" ? parsed : null;
+      } catch (_) {
+        return null;
+      }
+    }
+
+    function saveState() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    }
+
+    function initState() {
+      const existing = loadState();
+      if (existing && Array.isArray(existing.activities) && existing.months) {
+        state = existing;
       } else {
-        data = [];
-        for (let d = 0; d < DAYS; d++) {
-          data.push({
-            activities: ACTIVITIES.map(() => "none"),
-            overview: null,
-          });
+        const today = new Date();
+        const year = today.getFullYear();
+        const monthIndex = today.getMonth();
+        const key = getMonthKey(year, monthIndex);
+        const days = getDaysInMonth(year, monthIndex);
+
+        state = {
+          activities: ["Trading", "Coding", "Automation", "Self-Care", "Prayer"],
+          months: {}
+        };
+
+        state.months[key] = {
+          year,
+          monthIndex,
+          days,
+          data: Array.from({ length: days }, () => ({
+            activities: state.activities.map(() => "none"),
+            overview: null
+          }))
+        };
+      }
+
+      const today = new Date();
+      const todayKey = getMonthKey(today.getFullYear(), today.getMonth());
+      if (state.months[todayKey]) {
+        currentMonthKey = todayKey;
+      } else {
+        const keys = Object.keys(state.months);
+        currentMonthKey = keys.length ? keys[0] : todayKey;
+        if (!state.months[currentMonthKey]) {
+          const [y, m] = currentMonthKey.split("-").map(Number);
+          const year = y;
+          const monthIndex = m - 1;
+          const days = getDaysInMonth(year, monthIndex);
+          state.months[currentMonthKey] = {
+            year,
+            monthIndex,
+            days,
+            data: Array.from({ length: days }, () => ({
+              activities: state.activities.map(() => "none"),
+              overview: null
+            }))
+          };
         }
       }
     }
 
-    function saveData() {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+    function ensureMonth(year, monthIndex) {
+      const key = getMonthKey(year, monthIndex);
+      if (!state.months[key]) {
+        const days = getDaysInMonth(year, monthIndex);
+        state.months[key] = {
+          year,
+          monthIndex,
+          days,
+          data: Array.from({ length: days }, () => ({
+            activities: state.activities.map(() => "none"),
+            overview: null
+          }))
+        };
+      } else {
+        const m = state.months[key];
+        const days = getDaysInMonth(year, monthIndex);
+        m.days = days;
+        if (m.data.length !== days) {
+          const newData = Array.from({ length: days }, (_, idx) => {
+            if (m.data[idx]) {
+              const row = m.data[idx];
+              if (!Array.isArray(row.activities)) {
+                row.activities = state.activities.map(() => "none");
+              } else {
+                if (row.activities.length < state.activities.length) {
+                  while (row.activities.length < state.activities.length) {
+                    row.activities.push("none");
+                  }
+                } else if (row.activities.length > state.activities.length) {
+                  row.activities = row.activities.slice(0, state.activities.length);
+                }
+              }
+              return row;
+            } else {
+              return {
+                activities: state.activities.map(() => "none"),
+                overview: null
+              };
+            }
+          });
+          m.data = newData;
+        } else {
+          m.data.forEach(row => {
+            if (!Array.isArray(row.activities)) {
+              row.activities = state.activities.map(() => "none");
+            } else {
+              if (row.activities.length < state.activities.length) {
+                while (row.activities.length < state.activities.length) {
+                  row.activities.push("none");
+                }
+              } else if (row.activities.length > state.activities.length) {
+                row.activities = row.activities.slice(0, state.activities.length);
+              }
+            }
+          });
+        }
+      }
+      return state.months[key];
     }
 
     function getPctFromValue(value) {
@@ -507,13 +854,15 @@
       return { stage: 4, label: "Perfect day", danger: false };
     }
 
-    function updateActivityCell(dayIndex, activityIndex) {
-      const val = data[dayIndex].activities[activityIndex];
+    function updateActivityCell(monthKey, dayIndex, activityIndex) {
+      const month = state.months[monthKey];
+      if (!month) return;
+      const val = month.data[dayIndex].activities[activityIndex];
       const pct = getPctFromValue(val);
       const { stage, label } = stageFromActivityValue(val);
 
       const select = document.querySelector(
-        `select[data-day="${dayIndex}"][data-activity="${activityIndex}"]`
+        `select[data-month="${monthKey}"][data-day="${dayIndex}"][data-activity="${activityIndex}"]`
       );
       if (!select) return;
 
@@ -531,8 +880,10 @@
       labelEl.textContent = label;
     }
 
-    function updateOverviewForDay(dayIndex) {
-      const day = data[dayIndex];
+    function updateOverviewForDay(monthKey, dayIndex) {
+      const month = state.months[monthKey];
+      if (!month) return;
+      const day = month.data[dayIndex];
       let sum = 0;
       let count = 0;
       let allZero = true;
@@ -555,7 +906,7 @@
       day.overview = overview;
 
       const wrap = document.querySelector(
-        `div[data-overview-linear="${dayIndex}"]`
+        `div[data-month-overview="${monthKey}"][data-overview-linear="${dayIndex}"]`
       );
       if (!wrap) return;
       const fill = wrap.querySelector(".overview-linear-fill");
@@ -566,35 +917,359 @@
 
       const width = overview === null || isNaN(overview) ? 0 : overview;
       fill.style.width = width + "%";
-      labelEl.innerHTML = `<strong>${label}</strong>`;
+
+      if (overview === null || isNaN(overview)) {
+        labelEl.innerHTML = `<strong>${label}</strong>`;
+      } else {
+        labelEl.innerHTML = `<strong>${label}</strong> · ${overview}%`;
+      }
     }
 
-    function updateSummary() {
+    function computeLongestStreakForMonth(monthKey) {
+      const month = state.months[monthKey];
+      if (!month) return 0;
+      let longest = 0;
+      let current = 0;
+      month.data.forEach((day) => {
+        const ov = day.overview;
+        const active = ov !== null && !isNaN(ov) && ov > 0;
+        if (active) {
+          current++;
+          if (current > longest) longest = current;
+        } else {
+          current = 0;
+        }
+      });
+      return longest;
+    }
+
+    function computeMonthStats(monthKey) {
+      const month = state.months[monthKey];
+      if (!month) return { avg: null, daysTracked: 0, perfectDays: 0, longestStreak: 0 };
       let daysWith = 0;
       let sum = 0;
       let perfect = 0;
-
-      data.forEach((day) => {
+      month.data.forEach((day) => {
         if (day.overview !== null && !isNaN(day.overview)) {
           daysWith++;
           sum += day.overview;
           if (day.overview === 100) perfect++;
         }
       });
+      const longestStreak = computeLongestStreakForMonth(monthKey);
+      if (daysWith === 0) return { avg: null, daysTracked: 0, perfectDays: 0, longestStreak };
+      return { avg: Math.round(sum / daysWith), daysTracked: daysWith, perfectDays: perfect, longestStreak };
+    }
 
-      if (daysWith === 0) {
-        summaryText.textContent = "No daily completion data yet.";
+    function updateSummaryForCurrentMonth() {
+      const stats = computeMonthStats(currentMonthKey);
+      if (stats.daysTracked === 0) {
+        summaryText.textContent = "No daily completion data yet for this month.";
       } else {
-        const avg = Math.round(sum / daysWith);
         summaryText.textContent =
-          `Average completion: ${avg}% · 100% days: ${perfect}`;
+          `Average completion this month: ${stats.avg}% · Perfect days (100%): ${stats.perfectDays} · Longest streak: ${stats.longestStreak} days`;
       }
     }
 
+    function renderMonthPicker() {
+      const month = state.months[currentMonthKey];
+      if (!month) return;
+      const year = month.year;
+      const monthIndex = month.monthIndex;
+      const value = `${year}-${String(monthIndex + 1).padStart(2, "0")}`;
+      monthPicker.value = value;
+    }
+
+    function renderCompareSelect() {
+      const keys = Object.keys(state.months).sort();
+      const current = currentMonthKey;
+      const selected = compareSelect.value;
+      compareSelect.innerHTML = "";
+      const optNone = document.createElement("option");
+      optNone.value = "";
+      optNone.textContent = "None";
+      compareSelect.appendChild(optNone);
+
+      keys.forEach((key) => {
+        if (key === current) return;
+        const m = state.months[key];
+        const option = document.createElement("option");
+        option.value = key;
+        const label = `${m.year}-${String(m.monthIndex + 1).padStart(2, "0")}`;
+        option.textContent = label;
+        compareSelect.appendChild(option);
+      });
+
+      // restore previous selection if still valid
+      if (selected && keys.includes(selected) && selected !== current) {
+        compareSelect.value = selected;
+      } else {
+        compareSelect.value = "";
+      }
+    }
+
+    function setInputsEnabled(enabled) {
+      const selects = document.querySelectorAll(".activity-select");
+      selects.forEach(sel => { sel.disabled = !enabled; });
+      if (enabled) {
+        appRoot.classList.remove("compare-locked");
+      } else {
+        appRoot.classList.add("compare-locked");
+      }
+    }
+
+    function updateComparison() {
+      const otherKey = compareSelect.value;
+      if (!otherKey) {
+        compareSummary.textContent =
+          "Select another month or click a month card below to compare your average completion, streaks, and consistency.";
+        setInputsEnabled(true);
+        highlightCompareMonthCard(null);
+        return;
+      }
+
+      const currentStats = computeMonthStats(currentMonthKey);
+      const otherStats = computeMonthStats(otherKey);
+
+      const curLabel = currentStats.avg === null ? "–" : `${currentStats.avg}%`;
+      const otherLabel = otherStats.avg === null ? "–" : `${otherStats.avg}%`;
+
+      let diffText = "";
+      if (currentStats.avg !== null && otherStats.avg !== null) {
+        const diff = currentStats.avg - otherStats.avg;
+        if (diff > 0) {
+          diffText = `Current month is <strong>+${diff} points</strong> above the comparison month.`;
+        } else if (diff < 0) {
+          diffText = `Current month is <strong>${diff} points</strong> below the comparison month.`;
+        } else {
+          diffText = `Both months have the <strong>same average</strong>.`;
+        }
+      }
+
+      compareSummary.innerHTML =
+        `<strong>Current month</strong> — Avg: ${curLabel}, ` +
+        `Days tracked: ${currentStats.daysTracked}, ` +
+        `Perfect days: ${currentStats.perfectDays}, ` +
+        `Longest streak: ${currentStats.longestStreak} days<br>` +
+        `<strong>Comparison month</strong> — Avg: ${otherLabel}, ` +
+        `Days tracked: ${otherStats.daysTracked}, ` +
+        `Perfect days: ${otherStats.perfectDays}, ` +
+        `Longest streak: ${otherStats.longestStreak} days` +
+        (diffText ? `<br>${diffText}` : "");
+
+      // lock inputs while comparing
+      setInputsEnabled(true); // first ensure DOM exists
+      setInputsEnabled(false);
+      highlightCompareMonthCard(otherKey);
+    }
+
+    function monthName(index) {
+      return ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"][index] || "";
+    }
+
+    function renderYearOverview() {
+      const keys = Object.keys(state.months).sort();
+      yearGrid.innerHTML = "";
+
+      if (!keys.length) {
+        yearGrid.innerHTML = "<div style='font-size:12px;color:#6b7280;'>No month data yet.</div>";
+        yearProgressLabel.textContent =
+          "No tracked days yet. Once you log activity, this will show your yearly average completion.";
+        yearProgressFill.style.width = "0%";
+        return;
+      }
+
+      let globalSum = 0;
+      let globalCount = 0;
+      let globalLongestStreak = 0;
+
+      keys.forEach((key) => {
+        const stats = computeMonthStats(key);
+        if (stats.avg !== null && stats.daysTracked > 0) {
+          globalSum += stats.avg * stats.daysTracked;
+          globalCount += stats.daysTracked;
+        }
+        if (stats.longestStreak > globalLongestStreak) {
+          globalLongestStreak = stats.longestStreak;
+        }
+      });
+
+      if (globalCount === 0) {
+        yearProgressLabel.textContent =
+          "No tracked days yet. Once you log activity, this will show your yearly average completion.";
+        yearProgressFill.style.width = "0%";
+      } else {
+        const globalAvg = Math.round(globalSum / globalCount);
+        yearProgressLabel.textContent =
+          `Yearly average completion: ${globalAvg}% · Longest streak across months: ${globalLongestStreak} days`;
+        yearProgressFill.style.width = `${globalAvg}%`;
+      }
+
+      const compareKey = compareSelect.value || null;
+
+      keys.forEach((key) => {
+        const m = state.months[key];
+        const stats = computeMonthStats(key);
+        const card = document.createElement("div");
+        card.className = "year-month-card";
+        card.dataset.monthKey = key;
+        if (compareKey && key === compareKey) {
+          card.classList.add("is-compare");
+        }
+
+        const title = document.createElement("div");
+        title.className = "year-month-title";
+        title.textContent = `${monthName(m.monthIndex)} ${m.year}`;
+
+        const main = document.createElement("div");
+        main.className = "year-month-main";
+        main.textContent = stats.avg === null ? "–" : `${stats.avg}% avg`;
+
+        const meta = document.createElement("div");
+        meta.className = "year-month-meta";
+        meta.textContent =
+          `Days tracked: ${stats.daysTracked} · Perfect days: ${stats.perfectDays} · Longest streak: ${stats.longestStreak} days`;
+
+        card.appendChild(title);
+        card.appendChild(main);
+        card.appendChild(meta);
+
+        card.addEventListener("click", () => {
+          if (key === currentMonthKey) {
+            // clicking current month clears comparison
+            compareSelect.value = "";
+          } else {
+            compareSelect.value = key;
+          }
+          updateComparison();
+          renderYearOverview(); // refresh highlight
+        });
+
+        yearGrid.appendChild(card);
+      });
+    }
+
+    function highlightCompareMonthCard(compareKey) {
+      const cards = document.querySelectorAll(".year-month-card");
+      cards.forEach(card => {
+        const key = card.dataset.monthKey;
+        if (compareKey && key === compareKey) {
+          card.classList.add("is-compare");
+        } else {
+          card.classList.remove("is-compare");
+        }
+      });
+    }
+
     function buildTable() {
+      const month = state.months[currentMonthKey];
+      if (!month) return;
+
+      ensureMonth(month.year, month.monthIndex);
+
+      tableHead.innerHTML = "";
       tableBody.innerHTML = "";
 
-      for (let d = 0; d < DAYS; d++) {
+      const headRow = document.createElement("tr");
+
+      const dayTh = document.createElement("th");
+      dayTh.className = "col-day";
+      dayTh.textContent = "Day";
+      headRow.appendChild(dayTh);
+
+      state.activities.forEach((name, index) => {
+        const th = document.createElement("th");
+        const headerDiv = document.createElement("div");
+        headerDiv.className = "activity-header";
+
+        const titleSpan = document.createElement("span");
+        titleSpan.className = "activity-title";
+        titleSpan.textContent = name;
+        titleSpan.dataset.activityIndex = index.toString();
+        titleSpan.title = "Click to rename";
+
+        const actionsDiv = document.createElement("div");
+        actionsDiv.className = "header-actions customize-only";
+
+        const renameBtn = document.createElement("button");
+        renameBtn.className = "icon-btn";
+        renameBtn.type = "button";
+        renameBtn.textContent = "✏️";
+        renameBtn.title = "Rename activity";
+        renameBtn.addEventListener("click", () => {
+          const current = state.activities[index];
+          const next = prompt("Rename activity:", current);
+          if (next && next.trim()) {
+            state.activities[index] = next.trim();
+            saveState();
+            buildTable();
+            renderCompareSelect();
+            renderYearOverview();
+          }
+        });
+
+        const deleteBtn = document.createElement("button");
+        deleteBtn.className = "icon-btn";
+        deleteBtn.type = "button";
+        deleteBtn.textContent = "🗑️";
+        deleteBtn.title = "Delete activity column";
+        deleteBtn.addEventListener("click", () => {
+          if (state.activities.length <= 1) {
+            alert("At least one activity column is required.");
+            return;
+          }
+          if (!confirm(`Delete activity "${state.activities[index]}" from all months?`)) return;
+          state.activities.splice(index, 1);
+          Object.values(state.months).forEach((m) => {
+            m.data.forEach((row) => {
+              if (Array.isArray(row.activities)) {
+                row.activities.splice(index, 1);
+              }
+            });
+          });
+          saveState();
+          buildTable();
+          renderCompareSelect();
+          renderYearOverview();
+        });
+
+        actionsDiv.appendChild(renameBtn);
+        actionsDiv.appendChild(deleteBtn);
+
+        headerDiv.appendChild(titleSpan);
+        headerDiv.appendChild(actionsDiv);
+
+        th.appendChild(headerDiv);
+        headRow.appendChild(th);
+      });
+
+      const overviewTh = document.createElement("th");
+      overviewTh.textContent = "Daily completion overview";
+      headRow.appendChild(overviewTh);
+
+      tableHead.appendChild(headRow);
+
+      for (let d = 0; d < month.days; d++) {
+        if (!month.data[d]) {
+          month.data[d] = {
+            activities: state.activities.map(() => "none"),
+            overview: null
+          };
+        } else {
+          if (!Array.isArray(month.data[d].activities)) {
+            month.data[d].activities = state.activities.map(() => "none");
+          } else {
+            if (month.data[d].activities.length < state.activities.length) {
+              while (month.data[d].activities.length < state.activities.length) {
+                month.data[d].activities.push("none");
+              }
+            } else if (month.data[d].activities.length > state.activities.length) {
+              month.data[d].activities =
+                month.data[d].activities.slice(0, state.activities.length);
+            }
+          }
+        }
+
         const tr = document.createElement("tr");
 
         const tdDay = document.createElement("td");
@@ -602,7 +1277,7 @@
         tdDay.textContent = d + 1;
         tr.appendChild(tdDay);
 
-        ACTIVITIES.forEach((_, aIndex) => {
+        state.activities.forEach((_, aIndex) => {
           const td = document.createElement("td");
           td.className = "activity-cell";
 
@@ -620,6 +1295,7 @@
 
           const select = document.createElement("select");
           select.className = "activity-select";
+          select.setAttribute("data-month", currentMonthKey);
           select.setAttribute("data-day", d.toString());
           select.setAttribute("data-activity", aIndex.toString());
 
@@ -630,15 +1306,17 @@
             select.appendChild(o);
           });
 
-          select.value = data[d].activities[aIndex] || "none";
+          select.value = month.data[d].activities[aIndex] || "none";
 
           select.addEventListener("change", (e) => {
             const value = e.target.value;
-            data[d].activities[aIndex] = value;
-            updateActivityCell(d, aIndex);
-            updateOverviewForDay(d);
-            saveData();
-            updateSummary();
+            month.data[d].activities[aIndex] = value;
+            updateActivityCell(currentMonthKey, d, aIndex);
+            updateOverviewForDay(currentMonthKey, d);
+            saveState();
+            updateSummaryForCurrentMonth();
+            updateComparison();
+            renderYearOverview();
           });
 
           field.appendChild(select);
@@ -651,6 +1329,7 @@
 
         const overviewWrap = document.createElement("div");
         overviewWrap.className = "overview-linear stage-0";
+        overviewWrap.setAttribute("data-month-overview", currentMonthKey);
         overviewWrap.setAttribute("data-overview-linear", d.toString());
 
         const track = document.createElement("div");
@@ -672,30 +1351,103 @@
         tableBody.appendChild(tr);
       }
 
-      for (let d = 0; d < DAYS; d++) {
-        for (let aIndex = 0; aIndex < ACTIVITIES.length; aIndex++) {
-          updateActivityCell(d, aIndex);
+      for (let d = 0; d < month.days; d++) {
+        for (let aIndex = 0; aIndex < state.activities.length; aIndex++) {
+          updateActivityCell(currentMonthKey, d, aIndex);
         }
-        updateOverviewForDay(d);
+        updateOverviewForDay(currentMonthKey, d);
       }
-      updateSummary();
+      updateSummaryForCurrentMonth();
+      saveState();
+      renderYearOverview();
+
+      // if we are in compare mode, keep inputs disabled
+      if (compareSelect.value) {
+        setInputsEnabled(false);
+      } else {
+        setInputsEnabled(true);
+      }
     }
 
-    resetAllBtn.addEventListener("click", () => {
-      if (!confirm("Clear all 30 days of activity data?")) return;
-      data = [];
-      for (let d = 0; d < DAYS; d++) {
-        data.push({
-          activities: ACTIVITIES.map(() => "none"),
-          overview: null,
-        });
-      }
-      saveData();
+    // Events
+
+    monthPicker.addEventListener("change", () => {
+      const value = monthPicker.value;
+      if (!value) return;
+      const [y, m] = value.split("-").map(Number);
+      const year = y;
+      const monthIndex = m - 1;
+      const key = getMonthKey(year, monthIndex);
+      ensureMonth(year, monthIndex);
+      currentMonthKey = key;
       buildTable();
+      renderMonthPicker();
+      renderCompareSelect();
+      updateComparison();
     });
 
-    initData();
+    addActivityBtn.addEventListener("click", () => {
+      if (state.activities.length >= 8) {
+        alert("For now, max 8 activity columns are allowed.");
+        return;
+      }
+      const name = prompt("New activity name (e.g. Reading, Gym, Journaling):");
+      if (!name || !name.trim()) return;
+      state.activities.push(name.trim());
+      Object.values(state.months).forEach((m) => {
+        m.data.forEach((row) => {
+          if (!Array.isArray(row.activities)) {
+            row.activities = [];
+          }
+          row.activities.push("none");
+        });
+      });
+      saveState();
+      buildTable();
+      renderCompareSelect();
+      renderYearOverview();
+    });
+
+    compareSelect.addEventListener("change", updateComparison);
+
+    resetCurrentMonthBtn.addEventListener("click", () => {
+      const month = state.months[currentMonthKey];
+      if (!month) return;
+      const monthLabel = `${month.year}-${String(month.monthIndex + 1).padStart(2, "0")}`;
+      if (!confirm(`Clear all data for ${monthLabel}?`)) return;
+      month.data = Array.from({ length: month.days }, () => ({
+        activities: state.activities.map(() => "none"),
+        overview: null
+      }));
+      saveState();
+      buildTable();
+      updateComparison();
+    });
+
+    customizeToggle.addEventListener("click", () => {
+      customizeMode = !customizeMode;
+      if (customizeMode) {
+        appRoot.classList.remove("customize-off");
+        appRoot.classList.add("customize-on");
+        customizeToggle.textContent = "✔ Done customizing";
+      } else {
+        appRoot.classList.remove("customize-on");
+        appRoot.classList.add("customize-off");
+        customizeToggle.textContent = "⚙ Customize";
+      }
+    });
+
+    // Init
+
+    initState();
+    const currentMonth = state.months[currentMonthKey];
+    if (currentMonth) {
+      monthPicker.value = `${currentMonth.year}-${String(currentMonth.monthIndex + 1).padStart(2, "0")}`;
+    }
     buildTable();
+    renderMonthPicker();
+    renderCompareSelect();
+    updateComparison();
   </script>
 </body>
 </html>
