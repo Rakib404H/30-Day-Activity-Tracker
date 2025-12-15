@@ -317,10 +317,47 @@
       background: rgba(220, 38, 38, 0.15);
     }
 
+    /* Mobile compact layout */
     @media (max-width: 640px) {
-      header {
-        flex-direction: column;
-        align-items: flex-start;
+      .app {
+        margin: 16px auto;
+        padding: 0 8px;
+      }
+
+      .card {
+        padding: 14px;
+        border-radius: 12px;
+      }
+
+      header h1 {
+        font-size: 18px;
+      }
+
+      header p {
+        font-size: 12px;
+      }
+
+      .hint {
+        font-size: 11px;
+      }
+
+      th,
+      td {
+        padding: 4px 4px;
+        font-size: 11px;
+      }
+
+      .activity-field {
+        height: 26px;
+        font-size: 10px;
+      }
+
+      .overview-cell {
+        width: 160px;
+      }
+
+      .table-wrapper {
+        border-radius: 10px;
       }
     }
   </style>
@@ -330,7 +367,7 @@
     <div class="card">
       <header>
         <div>
-          <h1>Daily Activity Tracker</h1>
+          <h1>November Daily Activity Tracker</h1>
           <p>
             Track five daily activities with visual completion bars per cell and a daily linear overview, tuned for your November routine.
           </p>
@@ -375,7 +412,7 @@
             <a href="https://rakibhossain.dev/" target="_blank">Rakib Hossain</a>.
           </div>
           <div class="footer-note">
-            All activities are configured as customized goals for the month of <strong>November</strong>.
+            All activities are configured as customised goals for the month of <strong>November</strong>.
           </div>
         </div>
         <button type="button" class="btn-danger" id="resetAll">
@@ -394,7 +431,6 @@
     const summaryText = document.getElementById("summaryText");
     const resetAllBtn = document.getElementById("resetAll");
 
-    // Dropdown options (nicer labels for the menu)
     const ACTIVITY_OPTIONS = [
       { value: "none",   label: "⚪ Not set",               pct: 0 },
       { value: "unable", label: "⛔ Couldn't do today",     pct: 0 },
@@ -404,7 +440,6 @@
       { value: "100",    label: "✅ 100% completed",       pct: 100 },
     ];
 
-    // data[dayIndex] = { activities: [...], overview: number|null }
     let data = [];
 
     function loadData() {
@@ -486,10 +521,9 @@
       const fill = field.querySelector(".activity-fill");
       const labelEl = field.querySelector(".activity-label");
 
-      // Width logic: normal % for progress, but full-width red for "Couldn't do today"
       let width = pct;
       if (val === "unable") {
-        width = 100; // visually strong "fail" state
+        width = 100;
       }
 
       fill.style.width = width + "%";
@@ -638,7 +672,6 @@
         tableBody.appendChild(tr);
       }
 
-      // Now that everything is in the DOM, update visuals
       for (let d = 0; d < DAYS; d++) {
         for (let aIndex = 0; aIndex < ACTIVITIES.length; aIndex++) {
           updateActivityCell(d, aIndex);
