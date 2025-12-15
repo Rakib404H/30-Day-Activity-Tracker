@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>30-Day Habit Completion Tracker</title>
+  <title>30-Day Activity Overview Tracker</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <style>
     :root {
@@ -87,7 +87,7 @@
 
     table {
       width: 100%;
-      min-width: 780px;
+      min-width: 820px;
       border-collapse: collapse;
       font-size: 13px;
     }
@@ -126,80 +126,86 @@
       font-weight: 600;
     }
 
-    .habit-cell {
+    /* Activity dropdowns */
+
+    .activity-cell {
       text-align: center;
     }
 
-    .habit-cell input[type="checkbox"] {
-      width: 18px;
-      height: 18px;
-      cursor: pointer;
+    .activity-select {
+      width: 100%;
+      max-width: 130px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border);
+      padding: 5px 6px;
+      font-size: 12px;
+      font-family: inherit;
+      outline: none;
+      background: #f9fafb;
+      color: #374151;
+      transition: border-color 0.15s ease, box-shadow 0.15s ease,
+        background 0.15s ease, color 0.15s ease;
     }
 
-    /* Completion column */
-
-    .completion-cell {
-      width: 150px;
+    .activity-select:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 1px rgba(37, 99, 235, 0.1);
+      background: #ffffff;
     }
 
-    .completion-pill {
+    /* Overview column */
+
+    .overview-cell {
+      width: 170px;
+    }
+
+    .overview-pill {
       border-radius: 999px;
       padding: 4px 10px;
       display: inline-flex;
       align-items: center;
-      justify-content: space-between;
+      justify-content: center;
       gap: 6px;
       width: 100%;
       border: 1px solid #e5e7eb;
       background: #f9fafb;
       font-size: 12px;
+      font-weight: 500;
+      text-align: center;
       transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
     }
 
-    .completion-label {
-      font-weight: 500;
-    }
-
-    .completion-select {
-      border: none;
-      background: transparent;
-      font-size: 12px;
-      font-family: inherit;
-      outline: none;
-      padding: 2px 0;
-      cursor: pointer;
-      color: inherit;
-    }
-
-    .completion-select option {
-      color: #111827;
-    }
-
-    .completion-pill.none {
+    .overview-pill.none {
       background: #f9fafb;
       border-style: dashed;
-      color: #6b7280;
+      color: #9ca3af;
     }
 
-    .completion-pill.p25 {
+    .overview-pill.zero {
       background: #fee2e2;
       border-color: #fecaca;
       color: #991b1b;
     }
 
-    .completion-pill.p50 {
-      background: #fef9c3;
+    .overview-pill.low {
+      background: #fef3c7;
       border-color: #facc15;
-      color: #854d0e;
+      color: #92400e;
     }
 
-    .completion-pill.p75 {
+    .overview-pill.medium {
+      background: #bfdbfe;
+      border-color: #60a5fa;
+      color: #1d4ed8;
+    }
+
+    .overview-pill.high {
       background: #ccfbf1;
       border-color: #14b8a6;
       color: #115e59;
     }
 
-    .completion-pill.p100 {
+    .overview-pill.perfect {
       background: #bbf7d0;
       border-color: #22c55e;
       color: #14532d;
@@ -261,15 +267,18 @@
     <div class="card">
       <header>
         <div>
-          <h1>30-Day Habit Completion Tracker</h1>
-          <p>Track 4 key habits per day and rate your overall completion in the last column.</p>
+          <h1>30-Day Activity Overview Tracker</h1>
+          <p>
+            Rate each activity as a percentage, and the last column shows your daily completion overview automatically.
+          </p>
         </div>
-        <span class="tag">30 days · 4 habits · 25/50/75/100% summary</span>
+        <span class="tag">30 days · 5 activities · auto overview</span>
       </header>
 
       <div class="hint">
-        Current habits: Trading, Coding, Automation, Learning. You can rename them in the code if you want.
-        Check habits you did, and use the last column dropdown (25%, 50%, 75%, 100%) as your daily completion overview.
+        Activities per day: <strong>Trading</strong>, <strong>Coding</strong>, <strong>Automation</strong>,
+        <strong>Learning / Study</strong>, <strong>Workout</strong>.  
+        Each activity dropdown: <em>Not set · Couldn't do today · 25% · 50% · 75% · 100%</em>.
       </div>
 
       <div class="table-wrapper">
@@ -281,6 +290,7 @@
               <th>Coding</th>
               <th>Automation</th>
               <th>Learning / Study</th>
+              <th>Workout</th>
               <th>Daily completion overview</th>
             </tr>
           </thead>
@@ -303,17 +313,33 @@
 
   <script>
     const DAYS = 30;
-    const HABITS = ["trading", "coding", "automation", "learning"]; // 4 habits
-    const STORAGE_KEY = "thirty_day_habit_completion_v1";
+    const ACTIVITIES = [
+      "trading",
+      "coding",
+      "automation",
+      "learning",
+      "workout",
+    ];
+    const STORAGE_KEY = "thirty_day_activity_overview_v1";
 
     const tableBody = document.getElementById("tableBody");
     const summaryText = document.getElementById("summaryText");
     const resetAllBtn = document.getElementById("resetAll");
 
+    // Activity dropdown options
+    const ACTIVITY_OPTIONS = [
+      { value: "none", label: "Not set" },
+      { value: "unable", label: "Couldn't do today" },
+      { value: "25", label: "25%" },
+      { value: "50", label: "50%" },
+      { value: "75", label: "75%" },
+      { value: "100", label: "100%" },
+    ];
+
     // Data structure:
     // data[dayIndex] = {
-    //   habits: [true/false,...4],
-    //   completion: "none" | "25" | "50" | "75" | "100"
+    //   activities: ["none" | "unable" | "25" | "50" | "75" | "100", ...5],
+    //   overview: null | number
     // }
     let data = [];
 
@@ -329,14 +355,19 @@
 
     function initData() {
       const saved = loadData();
-      if (saved && Array.isArray(saved) && saved.length === DAYS) {
+      if (
+        saved &&
+        Array.isArray(saved) &&
+        saved.length === DAYS &&
+        saved.every((d) => Array.isArray(d.activities))
+      ) {
         data = saved;
       } else {
         data = [];
         for (let d = 0; d < DAYS; d++) {
           data.push({
-            habits: HABITS.map(() => false),
-            completion: "none",
+            activities: ACTIVITIES.map(() => "none"),
+            overview: null,
           });
         }
       }
@@ -346,54 +377,81 @@
       localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
     }
 
-    function completionClass(value) {
-      switch (value) {
-        case "25": return "p25";
-        case "50": return "p50";
-        case "75": return "p75";
-        case "100": return "p100";
-        default: return "none";
-      }
+    function overviewClass(value) {
+      if (value === null || isNaN(value)) return "none";
+      if (value === 0) return "zero";
+      if (value < 40) return "low";
+      if (value < 70) return "medium";
+      if (value < 100) return "high";
+      return "perfect";
     }
 
-    function completionLabel(value) {
-      if (value === "none") return "Not set";
-      return value + "%";
+    function overviewText(value) {
+      if (value === null || isNaN(value)) return "Not set";
+      return `${value}%`;
     }
 
-    function autoSuggestCompletion(dayIndex) {
-      const habits = data[dayIndex].habits;
-      const total = habits.length;
-      const doneCount = habits.filter(Boolean).length;
-      if (doneCount === 0) return "none";
+    // Calculate and update overview for a specific day
+    function updateOverviewForDay(dayIndex) {
+      const day = data[dayIndex];
+      let sum = 0;
+      let count = 0;
 
-      const ratio = doneCount / total;
-      if (ratio <= 0.25) return "25";
-      if (ratio <= 0.5) return "50";
-      if (ratio <= 0.75) return "75";
-      return "100";
-    }
-
-    function updateSummary() {
-      let countDaysWithCompletion = 0;
-      let sumPercentage = 0;
-      let perfectDays = 0;
-
-      data.forEach((day) => {
-        if (day.completion !== "none") {
-          countDaysWithCompletion++;
-          const val = parseInt(day.completion, 10);
-          sumPercentage += val;
-          if (val === 100) perfectDays++;
+      day.activities.forEach((val) => {
+        if (val === "none") {
+          // not counted at all
+          return;
+        }
+        if (val === "unable") {
+          // counted as 0% attempt
+          sum += 0;
+          count++;
+          return;
+        }
+        const num = parseInt(val, 10);
+        if (!isNaN(num)) {
+          sum += num;
+          count++;
         }
       });
 
-      if (countDaysWithCompletion === 0) {
-        summaryText.textContent = "No daily completion set yet.";
+      let overview = null;
+      if (count > 0) {
+        overview = Math.round(sum / count);
       } else {
-        const avg = Math.round(sumPercentage / countDaysWithCompletion);
-        summaryText.textContent =
-          `Average completion: ${avg}% · Perfect days (100%): ${perfectDays}`;
+        overview = null;
+      }
+
+      day.overview = overview;
+
+      const pill = document.querySelector(
+        `div[data-overview-pill="${dayIndex}"]`
+      );
+      if (pill) {
+        const labelSpan = pill.querySelector(".overview-label");
+        pill.className = "overview-pill " + overviewClass(overview);
+        labelSpan.textContent = overviewText(overview);
+      }
+    }
+
+    function updateSummary() {
+      let daysWithOverview = 0;
+      let sumOverview = 0;
+      let perfectDays = 0;
+
+      data.forEach((day) => {
+        if (day.overview !== null && !isNaN(day.overview)) {
+          daysWithOverview++;
+          sumOverview += day.overview;
+          if (day.overview === 100) perfectDays++;
+        }
+      });
+
+      if (daysWithOverview === 0) {
+        summaryText.textContent = "No daily completion data yet.";
+      } else {
+        const avg = Math.round(sumOverview / daysWithOverview);
+        summaryText.textContent = `Average completion: ${avg}% · 100% days: ${perfectDays}`;
       }
     }
 
@@ -409,108 +467,71 @@
         tdDay.textContent = d + 1;
         tr.appendChild(tdDay);
 
-        // Habit checkboxes
-        HABITS.forEach((_, hIndex) => {
+        // Activity dropdowns
+        ACTIVITIES.forEach((_, aIndex) => {
           const td = document.createElement("td");
-          td.className = "habit-cell";
-          const checkbox = document.createElement("input");
-          checkbox.type = "checkbox";
-          checkbox.checked = !!data[d].habits[hIndex];
+          td.className = "activity-cell";
 
-          checkbox.addEventListener("change", (e) => {
-            data[d].habits[hIndex] = e.target.checked;
-            // Auto-suggest completion if not manually overridden yet
-            const suggested = autoSuggestCompletion(d);
-            if (data[d].completion === "none" || data[d].completion === "25" ||
-                data[d].completion === "50" || data[d].completion === "75" ||
-                data[d].completion === "100") {
-              // update select + pill only if we think it's okay to auto-adjust
-              const select = document.querySelector(
-                `select[data-day="${d}"]`
-              );
-              const pill = document.querySelector(
-                `div[data-completion-pill="${d}"]`
-              );
-              if (select && pill && suggested !== "none") {
-                select.value = suggested;
-                data[d].completion = suggested;
-                pill.className = "completion-pill " + completionClass(suggested);
-                pill.querySelector(".completion-label").textContent =
-                  completionLabel(suggested);
-              } else {
-                data[d].completion = suggested;
-              }
-            }
+          const select = document.createElement("select");
+          select.className = "activity-select";
+          select.setAttribute("data-day", d.toString());
+          select.setAttribute("data-activity", aIndex.toString());
+
+          ACTIVITY_OPTIONS.forEach((opt) => {
+            const o = document.createElement("option");
+            o.value = opt.value;
+            o.textContent = opt.label;
+            select.appendChild(o);
+          });
+
+          select.value = data[d].activities[aIndex] || "none";
+
+          select.addEventListener("change", (e) => {
+            const value = e.target.value;
+            data[d].activities[aIndex] = value;
+            updateOverviewForDay(d);
             saveData();
             updateSummary();
           });
 
-          td.appendChild(checkbox);
+          td.appendChild(select);
           tr.appendChild(td);
         });
 
-        // Completion cell
-        const tdCompletion = document.createElement("td");
-        tdCompletion.className = "completion-cell";
+        // Overview cell (auto)
+        const tdOverview = document.createElement("td");
+        tdOverview.className = "overview-cell";
 
         const pill = document.createElement("div");
         pill.className =
-          "completion-pill " + completionClass(data[d].completion);
-        pill.setAttribute("data-completion-pill", d.toString());
+          "overview-pill " + overviewClass(data[d].overview);
+        pill.setAttribute("data-overview-pill", d.toString());
 
         const labelSpan = document.createElement("span");
-        labelSpan.className = "completion-label";
-        labelSpan.textContent = completionLabel(data[d].completion);
-
-        const select = document.createElement("select");
-        select.className = "completion-select";
-        select.setAttribute("data-day", d.toString());
-
-        // Options: empty + 25,50,75,100
-        const options = [
-          { value: "none", text: "Select…" },
-          { value: "25", text: "25%" },
-          { value: "50", text: "50%" },
-          { value: "75", text: "75%" },
-          { value: "100", text: "100%" },
-        ];
-
-        options.forEach((opt) => {
-          const o = document.createElement("option");
-          o.value = opt.value;
-          o.textContent = opt.text;
-          select.appendChild(o);
-        });
-
-        select.value = data[d].completion || "none";
-
-        select.addEventListener("change", (e) => {
-          const value = e.target.value;
-          data[d].completion = value;
-          pill.className = "completion-pill " + completionClass(value);
-          labelSpan.textContent = completionLabel(value);
-          saveData();
-          updateSummary();
-        });
+        labelSpan.className = "overview-label";
+        labelSpan.textContent = overviewText(data[d].overview);
 
         pill.appendChild(labelSpan);
-        pill.appendChild(select);
-        tdCompletion.appendChild(pill);
-        tr.appendChild(tdCompletion);
+        tdOverview.appendChild(pill);
+        tr.appendChild(tdOverview);
 
         tableBody.appendChild(tr);
       }
 
+      // Make sure overview + summary are synced on initial render
+      for (let d = 0; d < DAYS; d++) {
+        updateOverviewForDay(d);
+      }
       updateSummary();
     }
 
     resetAllBtn.addEventListener("click", () => {
-      if (!confirm("Clear all 30 days (habits and completion)?")) return;
+      if (!confirm("Clear all 30 days of activity data?")) return;
       data = [];
       for (let d = 0; d < DAYS; d++) {
         data.push({
-          habits: HABITS.map(() => false),
-          completion: "none",
+          activities: ACTIVITIES.map(() => "none"),
+          overview: null,
         });
       }
       saveData();
