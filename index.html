@@ -87,7 +87,7 @@
 
     table {
       width: 100%;
-      min-width: 820px;
+      min-width: 880px;
       border-collapse: collapse;
       font-size: 13px;
     }
@@ -156,59 +156,66 @@
     /* Overview column */
 
     .overview-cell {
-      width: 170px;
+      width: 200px;
     }
 
-    .overview-pill {
-      border-radius: 999px;
-      padding: 4px 10px;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 6px;
+    .overview-wrap {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 4px;
+    }
+
+    .overview-bar {
       width: 100%;
-      border: 1px solid #e5e7eb;
-      background: #f9fafb;
-      font-size: 12px;
+      display: flex;
+      gap: 4px;
+    }
+
+    .overview-segment {
+      flex: 1;
+      height: 8px;
+      border-radius: 999px;
+      background: #e5e7eb;
+      opacity: 0.5;
+      transition: background 0.15s ease, opacity 0.15s ease, transform 0.1s ease;
+    }
+
+    .overview-segment.active {
+      opacity: 1;
+      transform: translateY(-0.5px);
+    }
+
+    /* Stage colors */
+
+    .overview-wrap.stage-0 .overview-segment.active {
+      background: #9ca3af;
+    }
+
+    .overview-wrap.stage-1 .overview-segment.active {
+      background: #f97316;
+    }
+
+    .overview-wrap.stage-2 .overview-segment.active {
+      background: #facc15;
+    }
+
+    .overview-wrap.stage-3 .overview-segment.active {
+      background: #22c55e;
+    }
+
+    .overview-wrap.stage-4 .overview-segment.active {
+      background: #16a34a;
+    }
+
+    .overview-label {
+      font-size: 11px;
+      color: #6b7280;
+    }
+
+    .overview-label strong {
+      color: #111827;
       font-weight: 500;
-      text-align: center;
-      transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
-    }
-
-    .overview-pill.none {
-      background: #f9fafb;
-      border-style: dashed;
-      color: #9ca3af;
-    }
-
-    .overview-pill.zero {
-      background: #fee2e2;
-      border-color: #fecaca;
-      color: #991b1b;
-    }
-
-    .overview-pill.low {
-      background: #fef3c7;
-      border-color: #facc15;
-      color: #92400e;
-    }
-
-    .overview-pill.medium {
-      background: #bfdbfe;
-      border-color: #60a5fa;
-      color: #1d4ed8;
-    }
-
-    .overview-pill.high {
-      background: #ccfbf1;
-      border-color: #14b8a6;
-      color: #115e59;
-    }
-
-    .overview-pill.perfect {
-      background: #bbf7d0;
-      border-color: #22c55e;
-      color: #14532d;
     }
 
     .footer-bar {
@@ -269,16 +276,17 @@
         <div>
           <h1>30-Day Activity Overview Tracker</h1>
           <p>
-            Rate each activity as a percentage, and the last column shows your daily completion overview automatically.
+            Rate each activity as a percentage and see your day as a 4-stage visual progress bar.
           </p>
         </div>
-        <span class="tag">30 days · 5 activities · auto overview</span>
+        <span class="tag">30 days · 5 activities · visual overview</span>
       </header>
 
       <div class="hint">
         Activities per day: <strong>Trading</strong>, <strong>Coding</strong>, <strong>Automation</strong>,
-        <strong>Learning / Study</strong>, <strong>Workout</strong>.  
-        Each activity dropdown: <em>Not set · Couldn't do today · 25% · 50% · 75% · 100%</em>.
+        <strong>Learning / Study</strong>, <strong>Workout</strong>.<br />
+        Dropdown for each activity: <em>Not set · Couldn't do today · 25% · 50% · 75% · 100%</em>.
+        The last column shows a 4-stage bar: none · light · moderate · strong · perfect.
       </div>
 
       <div class="table-wrapper">
@@ -320,7 +328,7 @@
       "learning",
       "workout",
     ];
-    const STORAGE_KEY = "thirty_day_activity_overview_v1";
+    const STORAGE_KEY = "thirty_day_activity_overview_bar_v1";
 
     const tableBody = document.getElementById("tableBody");
     const summaryText = document.getElementById("summaryText");
@@ -336,11 +344,7 @@
       { value: "100", label: "100%" },
     ];
 
-    // Data structure:
-    // data[dayIndex] = {
-    //   activities: ["none" | "unable" | "25" | "50" | "75" | "100", ...5],
-    //   overview: null | number
-    // }
+    // data[dayIndex] = { activities: [...], overview: null|number }
     let data = [];
 
     function loadData() {
@@ -377,18 +381,24 @@
       localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
     }
 
-    function overviewClass(value) {
-      if (value === null || isNaN(value)) return "none";
-      if (value === 0) return "zero";
-      if (value < 40) return "low";
-      if (value < 70) return "medium";
-      if (value < 100) return "high";
-      return "perfect";
-    }
-
-    function overviewText(value) {
-      if (value === null || isNaN(value)) return "Not set";
-      return `${value}%`;
+    // Map numeric overview (0–100) to 4-stage bar + label
+    function stageFromOverview(overview) {
+      if (overview === null || isNaN(overview)) {
+        return { stage: 0, label: "Not set" };
+      }
+      if (overview === 0) {
+        return { stage: 0, label: "No progress" };
+      }
+      if (overview < 40) {
+        return { stage: 1, label: "Light progress" };
+      }
+      if (overview < 70) {
+        return { stage: 2, label: "Moderate progress" };
+      }
+      if (overview < 100) {
+        return { stage: 3, label: "Strong progress" };
+      }
+      return { stage: 4, label: "Perfect day" };
     }
 
     // Calculate and update overview for a specific day
@@ -396,14 +406,13 @@
       const day = data[dayIndex];
       let sum = 0;
       let count = 0;
+      let allZero = true;
 
       day.activities.forEach((val) => {
         if (val === "none") {
-          // not counted at all
           return;
         }
         if (val === "unable") {
-          // counted as 0% attempt
           sum += 0;
           count++;
           return;
@@ -412,25 +421,46 @@
         if (!isNaN(num)) {
           sum += num;
           count++;
+          if (num > 0) allZero = false;
         }
       });
 
       let overview = null;
       if (count > 0) {
         overview = Math.round(sum / count);
+        if (allZero && overview > 0) overview = 0;
       } else {
         overview = null;
       }
 
       day.overview = overview;
 
-      const pill = document.querySelector(
-        `div[data-overview-pill="${dayIndex}"]`
+      const wrap = document.querySelector(
+        `div[data-overview-wrap="${dayIndex}"]`
       );
-      if (pill) {
-        const labelSpan = pill.querySelector(".overview-label");
-        pill.className = "overview-pill " + overviewClass(overview);
-        labelSpan.textContent = overviewText(overview);
+      if (wrap) {
+        const labelEl = wrap.querySelector(".overview-label");
+        const segments = wrap.querySelectorAll(".overview-segment");
+
+        const { stage, label } = stageFromOverview(overview);
+        wrap.classList.remove(
+          "stage-0",
+          "stage-1",
+          "stage-2",
+          "stage-3",
+          "stage-4"
+        );
+        wrap.classList.add(`stage-${stage}`);
+
+        segments.forEach((seg, idx) => {
+          if (idx < stage) {
+            seg.classList.add("active");
+          } else {
+            seg.classList.remove("active");
+          }
+        });
+
+        labelEl.innerHTML = `<strong>${label}</strong>`;
       }
     }
 
@@ -498,27 +528,35 @@
           tr.appendChild(td);
         });
 
-        // Overview cell (auto)
+        // Overview cell (visual bar)
         const tdOverview = document.createElement("td");
         tdOverview.className = "overview-cell";
 
-        const pill = document.createElement("div");
-        pill.className =
-          "overview-pill " + overviewClass(data[d].overview);
-        pill.setAttribute("data-overview-pill", d.toString());
+        const wrap = document.createElement("div");
+        wrap.className = "overview-wrap";
+        wrap.setAttribute("data-overview-wrap", d.toString());
 
-        const labelSpan = document.createElement("span");
-        labelSpan.className = "overview-label";
-        labelSpan.textContent = overviewText(data[d].overview);
+        const bar = document.createElement("div");
+        bar.className = "overview-bar";
+        for (let i = 0; i < 4; i++) {
+          const seg = document.createElement("div");
+          seg.className = "overview-segment";
+          bar.appendChild(seg);
+        }
 
-        pill.appendChild(labelSpan);
-        tdOverview.appendChild(pill);
+        const label = document.createElement("div");
+        label.className = "overview-label";
+        label.textContent = "Not set";
+
+        wrap.appendChild(bar);
+        wrap.appendChild(label);
+        tdOverview.appendChild(wrap);
         tr.appendChild(tdOverview);
 
         tableBody.appendChild(tr);
       }
 
-      // Make sure overview + summary are synced on initial render
+      // Ensure visuals match data
       for (let d = 0; d < DAYS; d++) {
         updateOverviewForDay(d);
       }
