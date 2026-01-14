@@ -1,0 +1,15 @@
+﻿export const monthPicker = document.getElementById("monthPicker");
+export const compareSelect = document.getElementById("compareSelect");
+export const tableHead = document.getElementById("tableHead");
+export const tableBody = document.getElementById("tableBody");
+export const addActivityBtn = document.getElementById("addActivityBtn");
+export const summaryText = document.getElementById("summaryText");
+export const compareSummary = document.getElementById("compareSummary");
+export const resetCurrentMonthBtn = document.getElementById("resetCurrentMonth");
+export const yearGrid = document.getElementById("yearGrid");
+export const yearProgressLabel = document.getElementById("yearProgressLabel");
+export const yearProgressFill = document.getElementById("yearProgressFill");
+export const customizeToggle = document.getElementById("customizeToggle");
+export const appRoot = document.getElementById("appRoot");
+export const headerAvg = document.getElementById("headerAvg");
+export const headerStreakMeta = document.getElementById("headerStreakMeta");
