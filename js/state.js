@@ -52,6 +52,41 @@ export function recomputeAllOverviews() {
   });
 }
 
+function resolveCurrentMonthKey(nextState) {
+  const today = new Date();
+  const todayKey = getMonthKey(today.getFullYear(), today.getMonth());
+  if (nextState.months[todayKey]) return todayKey;
+  const keys = Object.keys(nextState.months || {});
+  if (keys.length) return keys.sort()[0];
+  return todayKey;
+}
+
+export function setStateFromRemote(remoteState) {
+  if (!remoteState || !Array.isArray(remoteState.activities) || !remoteState.months) return false;
+  state = remoteState;
+  currentMonthKey = resolveCurrentMonthKey(state);
+
+  if (!state.months[currentMonthKey]) {
+    const [y, m] = currentMonthKey.split("-").map(Number);
+    const year = y;
+    const monthIndex = m - 1;
+    const days = getDaysInMonth(year, monthIndex);
+    state.months[currentMonthKey] = {
+      year,
+      monthIndex,
+      days,
+      data: Array.from({ length: days }, () => ({
+        activities: state.activities.map(() => "none"),
+        overview: null
+      }))
+    };
+  }
+
+  recomputeAllOverviews();
+  saveState(state);
+  return true;
+}
+
 export function initState() {
   const existing = loadState();
   if (existing && Array.isArray(existing.activities) && existing.months) {

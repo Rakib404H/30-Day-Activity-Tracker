@@ -15,8 +15,10 @@ import {
   renderMonthPicker,
   renderCompareSelect,
   updateComparison,
-  renderYearOverview
+  renderYearOverview,
+  updateSyncStatus
 } from "./ui.js";
+import { initAuth } from "./auth.js";
 import {
   monthPicker,
   compareSelect,
@@ -115,3 +117,8 @@ renderMonthPicker();
 buildTable();
 renderCompareSelect();
 updateComparison();
+initAuth();
+
+window.addEventListener("sync-status", (event) => {
+  updateSyncStatus(event.detail?.status);
+});

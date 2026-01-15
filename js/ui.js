@@ -26,7 +26,13 @@ import {
   yearProgressFill,
   appRoot,
   headerAvg,
-  headerStreakMeta
+  headerStreakMeta,
+  dashAvg,
+  dashStreak,
+  dashDays,
+  dashPerfect,
+  dashboardSync,
+  accountLastSync
 } from "./dom.js";
 
 export function updateActivityCell(monthKey, dayIndex, activityIndex) {
@@ -103,7 +109,7 @@ function computeLongestStreakForMonth(monthKey) {
   return longest;
 }
 
-function computeMonthStats(monthKey) {
+export function computeMonthStats(monthKey) {
   const state = getState();
   const month = state.months[monthKey];
   if (!month) return { avg: null, daysTracked: 0, perfectDays: 0, longestStreak: 0 };
@@ -137,6 +143,7 @@ export function updateSummaryAndHeader() {
     summaryText.textContent = "No daily completion data yet for this month.";
     headerAvg.textContent = "0%";
     headerStreakMeta.textContent = "Longest streak: 0 days";
+    updateDashboardStats();
     return;
   }
 
@@ -144,6 +151,58 @@ export function updateSummaryAndHeader() {
     `Average completion this month: ${stats.avg}% · Perfect days (100%): ${stats.perfectDays} · Longest streak: ${stats.longestStreak} days`;
   headerAvg.textContent = `${stats.avg}%`;
   headerStreakMeta.textContent = `Longest streak: ${stats.longestStreak} days`;
+  updateDashboardStats();
+}
+
+export function updateDashboardStats() {
+  if (!dashAvg || !dashStreak || !dashDays || !dashPerfect) return;
+  const currentMonthKey = getCurrentMonthKey();
+  const stats = computeMonthStats(currentMonthKey);
+
+  if (stats.daysTracked === 0) {
+    dashAvg.textContent = "0%";
+    dashStreak.textContent = "Longest streak: 0 days";
+    dashDays.textContent = "0";
+    dashPerfect.textContent = "Perfect days: 0";
+    return;
+  }
+
+  dashAvg.textContent = `${stats.avg}%`;
+  dashStreak.textContent = `Longest streak: ${stats.longestStreak} days`;
+  dashDays.textContent = `${stats.daysTracked}`;
+  dashPerfect.textContent = `Perfect days: ${stats.perfectDays}`;
+}
+
+export function updateSyncStatus(status) {
+  if (!dashboardSync) return;
+  dashboardSync.classList.remove("is-pending", "is-error");
+  switch (status) {
+    case "syncing":
+      dashboardSync.textContent = "Sync: syncing...";
+      dashboardSync.classList.add("is-pending");
+      break;
+    case "pending":
+      dashboardSync.textContent = "Sync: pending";
+      dashboardSync.classList.add("is-pending");
+      break;
+    case "synced":
+      dashboardSync.textContent = "Sync: up to date";
+      if (accountLastSync) {
+        const time = new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+        accountLastSync.textContent = `Last sync: ${time}`;
+      }
+      break;
+    case "error":
+      dashboardSync.textContent = "Sync: needs attention";
+      dashboardSync.classList.add("is-error");
+      break;
+    case "offline":
+      dashboardSync.textContent = "Sync: offline";
+      break;
+    default:
+      dashboardSync.textContent = "Sync: idle";
+      break;
+  }
 }
 
 function setInputsEnabled(enabled) {
