@@ -148,7 +148,7 @@ export function updateSummaryAndHeader() {
   }
 
   summaryText.textContent =
-    `Average completion this month: ${stats.avg}% · Perfect days (100%): ${stats.perfectDays} · Longest streak: ${stats.longestStreak} days`;
+    `Average completion this month: ${stats.avg}% - Perfect days (100%): ${stats.perfectDays} - Longest streak: ${stats.longestStreak} days`;
   headerAvg.textContent = `${stats.avg}%`;
   headerStreakMeta.textContent = `Longest streak: ${stats.longestStreak} days`;
   updateDashboardStats();
@@ -244,8 +244,8 @@ export function updateComparison() {
   let insight = "";
   if (currentStats.avg !== null && otherStats.avg !== null) {
     const diff = currentStats.avg - otherStats.avg;
-    if (diff > 0) insight = `<span class="compare-highlight">You're up by ${diff} points compared to this month.</span>`;
-    else if (diff < 0) insight = `<span class="compare-negative">You're down by ${Math.abs(diff)} points vs this month.</span>`;
+    if (diff > 0) insight = `<span class="compare-highlight">You are up by ${diff} points compared to this month.</span>`;
+    else if (diff < 0) insight = `<span class="compare-negative">You are down by ${Math.abs(diff)} points vs this month.</span>`;
     else insight = `Both months have the <strong>same average completion</strong>.`;
   } else {
     insight = "One of the months has no completion data yet.";
@@ -345,7 +345,7 @@ export function renderYearOverview() {
   } else {
     const globalAvg = Math.round(globalSum / globalCount);
     yearProgressLabel.textContent =
-      `Yearly average completion: ${globalAvg}% · Longest streak across months: ${globalLongestStreak} days`;
+      `Yearly average completion: ${globalAvg}% - Longest streak across months: ${globalLongestStreak} days`;
     yearProgressFill.style.width = `${globalAvg}%`;
   }
 
@@ -371,7 +371,7 @@ export function renderYearOverview() {
     const meta = document.createElement("div");
     meta.className = "year-month-meta";
     meta.textContent =
-      `Days tracked: ${stats.daysTracked} · Perfect days: ${stats.perfectDays} · Longest streak: ${stats.longestStreak} days`;
+      `Days tracked: ${stats.daysTracked} - Perfect days: ${stats.perfectDays} - Longest streak: ${stats.longestStreak} days`;
 
     card.appendChild(title);
     card.appendChild(main);
@@ -394,6 +394,18 @@ export function buildTable() {
   const currentMonthKey = getCurrentMonthKey();
   const month = state.months[currentMonthKey];
   if (!month) return;
+
+  const editIcon =
+    '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">' +
+    '<path d="M4 20h4l10-10-4-4L4 16v4z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>' +
+    '<path d="M14 6l4 4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>' +
+    '</svg>';
+  const trashIcon =
+    '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">' +
+    '<path d="M4 7h16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>' +
+    '<path d="M9 7V5h6v2" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>' +
+    '<path d="M7 7l1 12h8l1-12" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>' +
+    '</svg>';
 
   ensureMonth(month.year, month.monthIndex);
   recomputeAllOverviews();
@@ -424,7 +436,7 @@ export function buildTable() {
     const renameBtn = document.createElement("button");
     renameBtn.className = "icon-btn";
     renameBtn.type = "button";
-    renameBtn.textContent = "✎";
+    renameBtn.innerHTML = editIcon;
     renameBtn.title = "Rename activity";
     renameBtn.addEventListener("click", () => {
       const current = state.activities[index];
@@ -443,7 +455,7 @@ export function buildTable() {
     const deleteBtn = document.createElement("button");
     deleteBtn.className = "icon-btn";
     deleteBtn.type = "button";
-    deleteBtn.textContent = "🗑";
+    deleteBtn.innerHTML = trashIcon;
     deleteBtn.title = "Delete activity column";
     deleteBtn.addEventListener("click", () => {
       if (state.activities.length <= 1) {

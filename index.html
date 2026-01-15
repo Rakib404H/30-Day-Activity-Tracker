@@ -6,6 +6,9 @@
 <meta name="description" content="A simple daily activity tracker to build consistency, track habits, and improve focus. Built by Rakib Hossain.">
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
@@ -222,35 +225,64 @@
       <div class="modal-header">
         <div>
           <h3 id="authTitle">Welcome back</h3>
-          <p>Sign in or create an account to access your dashboard.</p>
+          <p id="authSubtitle">Sign in or create an account to access your dashboard.</p>
         </div>
         <button class="icon-btn" id="authCloseBtn" type="button" aria-label="Close">
           x
         </button>
       </div>
       <div class="modal-body">
-        <label>
-          Email
-          <input type="email" id="authEmail" placeholder="you@email.com">
-        </label>
-        <label>
-          Password
-          <input type="password" id="authPassword" placeholder="your password">
-        </label>
         <div class="auth-message" id="authMessage" role="status" aria-live="polite"></div>
-        <button class="link-btn" id="authForgotBtn" type="button">
-          Forgot password?
-        </button>
-        <div class="modal-actions">
-          <button class="btn btn-primary" id="authLoginBtn" type="button">Login</button>
-          <button class="btn btn-ghost" id="authSignupBtn" type="button">Sign up</button>
+        <div id="authLoginForm">
+          <label id="authNameField" class="is-hidden">
+            Name
+            <input type="text" id="authName" name="name" autocomplete="name" placeholder="Your name">
+          </label>
+          <label>
+            Email
+            <input type="email" id="authEmail" name="email" autocomplete="email" placeholder="you@email.com">
+          </label>
+          <label id="authPasswordField">
+            Password
+            <input type="password" id="authPassword" name="password" autocomplete="current-password" placeholder="your password">
+          </label>
+          <div class="auth-inline-actions">
+            <button class="btn btn-primary" id="authSubmitBtn" type="button">Login</button>
+            <button class="link-btn" id="authForgotBtn" type="button">
+              Forgot password?
+            </button>
+          </div>
+          <div class="auth-switch-row" id="authSwitchRow">
+            <span id="authSwitchHint">New here?</span>
+            <button class="link-btn" id="authSwitchBtn" type="button">Create account</button>
+          </div>
+        </div>
+        <div class="is-hidden" id="authResetForm">
+          <label>
+            New password
+            <input type="password" id="authResetPassword" placeholder="Enter a new password">
+          </label>
+          <label>
+            Confirm new password
+            <input type="password" id="authResetConfirm" placeholder="Re-enter new password">
+          </label>
+          <div class="modal-actions">
+            <button class="btn btn-primary" id="authResetBtn" type="button">Set new password</button>
+            <button class="btn btn-ghost" id="authResetBackBtn" type="button">Back to login</button>
+          </div>
         </div>
       </div>
     </div>
   </div>
+  <div class="notice-overlay is-hidden" id="authNotice" aria-hidden="true">
+    <div class="notice-card" role="status" aria-live="polite">
+      <div class="notice-title">Login required</div>
+      <div class="notice-text" id="authNoticeText">Please login to customize the columns.</div>
+    </div>
+  </div>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script type="module" src="js/app.js"></script>
+  <script src="js/app.bundle.js"></script>
 
 </body>
 </html>

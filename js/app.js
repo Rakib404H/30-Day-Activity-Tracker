@@ -25,10 +25,25 @@ import {
   resetCurrentMonthBtn,
   addActivityBtn,
   customizeToggle,
-  appRoot
+  appRoot,
+  authNotice,
+  authNoticeText
 } from "./dom.js";
 
 // Daily Activity Tracker v2.0 (module split)
+
+let noticeTimer = null;
+function showLoginNotice(message) {
+  if (!authNotice || !authNoticeText) return;
+  authNoticeText.textContent = message;
+  authNotice.classList.remove("is-hidden");
+  authNotice.setAttribute("aria-hidden", "false");
+  if (noticeTimer) clearTimeout(noticeTimer);
+  noticeTimer = setTimeout(() => {
+    authNotice.classList.add("is-hidden");
+    authNotice.setAttribute("aria-hidden", "true");
+  }, 1500);
+}
 
 monthPicker.addEventListener("change", () => {
   const value = monthPicker.value;
@@ -100,15 +115,19 @@ addActivityBtn?.addEventListener("click", () => {
 });
 
 customizeToggle.addEventListener("click", () => {
+  if (appRoot.dataset.auth !== "in") {
+    showLoginNotice("Please login to customize the columns.");
+    return;
+  }
   const isOn = toggleCustomizeMode();
   if (isOn) {
     appRoot.classList.remove("customize-off");
     appRoot.classList.add("customize-on");
-    customizeToggle.textContent = "✔ Done customizing";
+    customizeToggle.textContent = "Done customizing";
   } else {
     appRoot.classList.remove("customize-on");
     appRoot.classList.add("customize-off");
-    customizeToggle.textContent = "⚙ Customize";
+    customizeToggle.textContent = "Customize";
   }
 });
 
