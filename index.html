@@ -12,6 +12,7 @@
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
+  <a class="skip-link" href="#trackerView">Skip to tracker content</a>
   <div class="app customize-off" id="appRoot">
     <div class="tracker-view" id="trackerView">
       <!-- Main tracker card -->
@@ -62,14 +63,14 @@
 
         <div class="controls-right">
           <!-- Add activity first, Customize / Done second -->
-          <button class="btn btn-primary customize-only" id="addActivityBtn">
+          <button class="btn btn-primary customize-only" id="addActivityBtn" aria-label="Add activity column">
             + Add activity column
           </button>
-          <button class="btn btn-ghost" id="customizeToggle">
+          <button class="btn btn-ghost" id="customizeToggle" aria-label="Toggle customize mode">
             ⚙ Customize
           </button>
           <div class="account-menu" id="accountMenu">
-            <button class="btn btn-ghost" id="accountBtn" type="button">
+            <button class="btn btn-ghost" id="accountBtn" type="button" aria-label="Account menu" aria-haspopup="true" aria-expanded="false">
               Login
             </button>
             <div class="account-dropdown is-hidden" id="accountDropdown">
@@ -78,10 +79,10 @@
                 <div class="account-email" id="accountEmail">Guest</div>
                 <div class="account-last-sync" id="accountLastSync">Last sync: --</div>
               </div>
-              <button class="account-item" id="accountDashboardBtn" type="button">
+              <button class="account-item" id="accountDashboardBtn" type="button" aria-label="Open dashboard">
                 Dashboard
               </button>
-              <button class="account-item" id="accountLogoutBtn" type="button">
+              <button class="account-item" id="accountLogoutBtn" type="button" aria-label="Sign out">
                 Sign out
               </button>
             </div>
@@ -111,7 +112,7 @@
             <a href="https://rakibhossain.dev/" target="_blank">Rakib Hossain</a>.
           </div>
         </div>
-        <button type="button" class="btn btn-ghost" id="resetCurrentMonth">
+        <button type="button" class="btn btn-ghost" id="resetCurrentMonth" aria-label="Clear current month">
           Clear current month
         </button>
       </div>
@@ -153,44 +154,76 @@
           </div>
           <div class="dashboard-actions">
             <div class="sync-pill" id="dashboardSync">Sync: idle</div>
-            <button class="btn btn-ghost" id="dashboardGoToTracker" type="button">
+            <button class="btn btn-ghost" id="dashboardGoToTracker" type="button" aria-label="Open tracker">
               Open tracker
             </button>
-            <button class="btn btn-ghost" id="logoutBtn" type="button">
+            <button class="btn btn-ghost" id="logoutBtn" type="button" aria-label="Sign out">
               Sign out
             </button>
           </div>
         </div>
 
-        <div class="dashboard-grid">
-          <div class="dashboard-card">
-            <div class="dashboard-card-title">This month</div>
-            <div class="dashboard-metric" id="dashAvg">0%</div>
-            <div class="dashboard-meta" id="dashStreak">Longest streak: 0 days</div>
+        <div class="dashboard-hero">
+          <div class="dashboard-hero-left">
+            <div class="dashboard-hero-title">Your momentum snapshot</div>
+            <div class="dashboard-hero-metrics">
+              <div class="dashboard-metric-card">
+                <div class="dashboard-card-title">Average completion</div>
+                <div class="dashboard-metric" id="dashAvg">0%</div>
+                <div class="dashboard-meta" id="dashStreak">Longest streak: 0 days</div>
+              </div>
+              <div class="dashboard-metric-card">
+                <div class="dashboard-card-title">Days tracked</div>
+                <div class="dashboard-metric" id="dashDays">0</div>
+                <div class="dashboard-meta" id="dashPerfect">Perfect days: 0</div>
+              </div>
+            </div>
           </div>
-          <div class="dashboard-card">
-            <div class="dashboard-card-title">Tracked days</div>
-            <div class="dashboard-metric" id="dashDays">0</div>
-            <div class="dashboard-meta" id="dashPerfect">Perfect days: 0</div>
-          </div>
-          <div class="dashboard-card">
-            <div class="dashboard-card-title">Quick actions</div>
+          <div class="dashboard-hero-right">
+            <div class="dashboard-card-title">Next best actions</div>
+            <p class="dashboard-hero-note">Small wins create the streak. Pick one action to reinforce today.</p>
             <div class="dashboard-actions-list">
-              <button class="btn btn-primary" id="dashboardAddActivity" type="button">
+              <button class="btn btn-primary" id="dashboardAddActivity" type="button" aria-label="Add activity">
                 Add activity
               </button>
-              <button class="btn btn-ghost" id="dashboardCompare" type="button">
+              <button class="btn btn-ghost" id="dashboardCompare" type="button" aria-label="Compare months">
                 Compare months
               </button>
             </div>
           </div>
-          <div class="dashboard-card">
-            <div class="dashboard-card-title">Consistency focus</div>
-            <ul class="dashboard-list">
-              <li>Review your streaks every Sunday.</li>
-              <li>Pick one activity to push to 100% this week.</li>
-              <li>Use compare mode to spot slow months.</li>
-            </ul>
+        </div>
+        <div class="dashboard-focus">
+          <div class="dashboard-card-title">Consistency focus</div>
+          <ul class="dashboard-list">
+            <li>Review your streaks every Sunday.</li>
+            <li>Pick one activity to push to 100% this week.</li>
+            <li>Use compare mode to spot slow months.</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="dashboard-section-title">Insights</div>
+        <div class="insight-grid">
+          <div class="insight-card">
+            <div class="insight-label">Best weekday</div>
+            <div class="insight-value" id="insightBestWeekday">-</div>
+            <div class="insight-meta" id="insightBestWeekdayMeta">No data yet.</div>
+          </div>
+          <div class="insight-card">
+            <div class="insight-label">Strongest activity</div>
+            <div class="insight-value" id="insightBestActivity">-</div>
+            <div class="insight-meta" id="insightBestActivityMeta">No data yet.</div>
+          </div>
+          <div class="insight-card">
+            <div class="insight-label">Needs attention</div>
+            <div class="insight-value" id="insightWeakActivity">-</div>
+            <div class="insight-meta" id="insightWeakActivityMeta">No data yet.</div>
+          </div>
+          <div class="insight-card">
+            <div class="insight-label">Trend vs last month</div>
+            <div class="insight-value" id="insightTrend">-</div>
+            <div class="insight-meta" id="insightTrendMeta">No data yet.</div>
           </div>
         </div>
       </div>

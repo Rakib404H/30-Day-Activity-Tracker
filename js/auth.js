@@ -56,10 +56,12 @@ const DEFAULT_AUTH_TITLE = "Welcome back";
 const DEFAULT_AUTH_SUBTITLE = "Sign in to access your dashboard.";
 const SIGNUP_AUTH_TITLE = "Create your account";
 const SIGNUP_AUTH_SUBTITLE = "Add your name, email, and password to get started.";
+let lastFocusedElement = null;
 
 function updateAccountButton() {
   if (!accountBtn) return;
   accountBtn.textContent = isAuthenticated ? "My account" : "Login";
+  accountBtn.setAttribute("aria-expanded", "false");
   if (!isAuthenticated) {
     accountDropdown?.classList.add("is-hidden");
     if (accountEmail) accountEmail.textContent = "Guest";
@@ -81,10 +83,12 @@ function setView(view) {
 
 function openModal() {
   if (!authModal) return;
+  lastFocusedElement = document.activeElement;
   authModal.classList.remove("is-hidden");
   authModal.setAttribute("aria-hidden", "false");
   setAuthMode("login");
   setAuthMessage("");
+  focusFirstModalElement();
 }
 
 function closeModal() {
@@ -92,15 +96,57 @@ function closeModal() {
   authModal.classList.add("is-hidden");
   authModal.setAttribute("aria-hidden", "true");
   setAuthMessage("");
+  if (lastFocusedElement && typeof lastFocusedElement.focus === "function") {
+    lastFocusedElement.focus();
+  }
+  lastFocusedElement = null;
 }
 
 function toggleAccountMenu() {
   if (!accountDropdown) return;
   accountDropdown.classList.toggle("is-hidden");
+  if (accountBtn) {
+    const expanded = !accountDropdown.classList.contains("is-hidden");
+    accountBtn.setAttribute("aria-expanded", expanded ? "true" : "false");
+  }
 }
 
 function closeAccountMenu() {
   accountDropdown?.classList.add("is-hidden");
+  if (accountBtn) accountBtn.setAttribute("aria-expanded", "false");
+}
+
+function getFocusableModalElements() {
+  if (!authModal) return [];
+  return Array.from(
+    authModal.querySelectorAll(
+      'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+    )
+  ).filter((el) => !el.hasAttribute("disabled") && el.getAttribute("aria-hidden") !== "true");
+}
+
+function focusFirstModalElement() {
+  const focusable = getFocusableModalElements();
+  if (focusable.length) focusable[0].focus();
+}
+
+function trapModalFocus(event) {
+  if (!authModal || authModal.classList.contains("is-hidden")) return;
+  if (event.key !== "Tab") return;
+  const focusable = getFocusableModalElements();
+  if (!focusable.length) return;
+
+  const first = focusable[0];
+  const last = focusable[focusable.length - 1];
+  const active = document.activeElement;
+
+  if (event.shiftKey && active === first) {
+    event.preventDefault();
+    last.focus();
+  } else if (!event.shiftKey && active === last) {
+    event.preventDefault();
+    first.focus();
+  }
 }
 
 function emitSyncStatus(status) {
@@ -447,6 +493,10 @@ export function initAuth() {
     if (event.key === "Escape" && !authModal.classList.contains("is-hidden")) {
       closeModal();
     }
+    if (event.key === "Escape" && accountDropdown && !accountDropdown.classList.contains("is-hidden")) {
+      closeAccountMenu();
+    }
+    trapModalFocus(event);
   });
   document.addEventListener("click", (event) => {
     if (!accountDropdown || !accountBtn) return;

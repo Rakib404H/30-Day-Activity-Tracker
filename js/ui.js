@@ -32,7 +32,15 @@ import {
   dashDays,
   dashPerfect,
   dashboardSync,
-  accountLastSync
+  accountLastSync,
+  insightBestWeekday,
+  insightBestWeekdayMeta,
+  insightBestActivity,
+  insightBestActivityMeta,
+  insightWeakActivity,
+  insightWeakActivityMeta,
+  insightTrend,
+  insightTrendMeta
 } from "./dom.js";
 
 export function updateActivityCell(monthKey, dayIndex, activityIndex) {
@@ -88,6 +96,18 @@ export function updateOverviewForDay(monthKey, dayIndex) {
 
   if (textEl) textEl.textContent = (overview === null || isNaN(overview)) ? "-" : `${overview}%`;
   if (labelEl) labelEl.innerHTML = `<strong>${label}</strong>`;
+
+  const row = document.querySelector(
+    `tr[data-month-row="${monthKey}"][data-day-row="${dayIndex}"]`
+  );
+  if (row) {
+    row.classList.remove("day-heat", "stage-0", "stage-1", "stage-2", "stage-3", "stage-4", "danger");
+    if (overview !== null && !isNaN(overview)) {
+      row.classList.add("day-heat");
+      if (stage > 0) row.classList.add("stage-" + stage);
+      if (danger) row.classList.add("danger");
+    }
+  }
 }
 
 function computeLongestStreakForMonth(monthKey) {
@@ -144,6 +164,7 @@ export function updateSummaryAndHeader() {
     headerAvg.textContent = "0%";
     headerStreakMeta.textContent = "Longest streak: 0 days";
     updateDashboardStats();
+    renderInsights();
     return;
   }
 
@@ -152,6 +173,7 @@ export function updateSummaryAndHeader() {
   headerAvg.textContent = `${stats.avg}%`;
   headerStreakMeta.textContent = `Longest streak: ${stats.longestStreak} days`;
   updateDashboardStats();
+  renderInsights();
 }
 
 export function updateDashboardStats() {
@@ -171,6 +193,144 @@ export function updateDashboardStats() {
   dashStreak.textContent = `Longest streak: ${stats.longestStreak} days`;
   dashDays.textContent = `${stats.daysTracked}`;
   dashPerfect.textContent = `Perfect days: ${stats.perfectDays}`;
+}
+
+function getTrackedDayCount(month) {
+  if (!month?.data) return 0;
+  return month.data.filter((day) => Array.isArray(day.activities) && day.activities.some((v) => v !== "none")).length;
+}
+
+function computeWeekdayAverages(month) {
+  const sums = Array(7).fill(0);
+  const counts = Array(7).fill(0);
+  month.data.forEach((day, idx) => {
+    if (!day || !Array.isArray(day.activities)) return;
+    const tracked = day.activities.some((v) => v !== "none");
+    if (!tracked) return;
+    const date = new Date(month.year, month.monthIndex, idx + 1);
+    const weekday = date.getDay();
+    const ov = day.overview;
+    if (ov === null || isNaN(ov)) return;
+    sums[weekday] += ov;
+    counts[weekday] += 1;
+  });
+  return { sums, counts };
+}
+
+function computeActivityAverages(month, activityCount) {
+  const sums = Array(activityCount).fill(0);
+  const counts = Array(activityCount).fill(0);
+  month.data.forEach((day) => {
+    if (!day || !Array.isArray(day.activities)) return;
+    const tracked = day.activities.some((v) => v !== "none");
+    if (!tracked) return;
+    day.activities.forEach((val, idx) => {
+      sums[idx] += getPctFromValue(val);
+      counts[idx] += 1;
+    });
+  });
+  return { sums, counts };
+}
+
+function setInsightPlaceholder() {
+  if (insightBestWeekday) insightBestWeekday.textContent = "-";
+  if (insightBestWeekdayMeta) insightBestWeekdayMeta.textContent = "No data yet.";
+  if (insightBestActivity) insightBestActivity.textContent = "-";
+  if (insightBestActivityMeta) insightBestActivityMeta.textContent = "No data yet.";
+  if (insightWeakActivity) insightWeakActivity.textContent = "-";
+  if (insightWeakActivityMeta) insightWeakActivityMeta.textContent = "No data yet.";
+  if (insightTrend) insightTrend.textContent = "-";
+  if (insightTrendMeta) insightTrendMeta.textContent = "No data yet.";
+}
+
+function renderInsights() {
+  if (!insightBestWeekday || !insightBestActivity || !insightWeakActivity || !insightTrend) return;
+  const state = getState();
+  const currentMonthKey = getCurrentMonthKey();
+  const month = state.months[currentMonthKey];
+  if (!month) {
+    setInsightPlaceholder();
+    return;
+  }
+
+  const trackedDays = getTrackedDayCount(month);
+  if (!trackedDays) {
+    setInsightPlaceholder();
+    return;
+  }
+
+  const weekdayNames = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+  const { sums, counts } = computeWeekdayAverages(month);
+  let bestWeekdayIndex = -1;
+  let bestWeekdayAvg = -1;
+  counts.forEach((count, idx) => {
+    if (!count) return;
+    const avg = Math.round(sums[idx] / count);
+    if (avg > bestWeekdayAvg) {
+      bestWeekdayAvg = avg;
+      bestWeekdayIndex = idx;
+    }
+  });
+
+  if (bestWeekdayIndex >= 0) {
+    insightBestWeekday.textContent = weekdayNames[bestWeekdayIndex];
+    if (insightBestWeekdayMeta) insightBestWeekdayMeta.textContent = `Average ${bestWeekdayAvg}% over ${counts[bestWeekdayIndex]} days`;
+  } else {
+    if (insightBestWeekdayMeta) insightBestWeekdayMeta.textContent = "No tracked weekdays yet.";
+  }
+
+  const activityCount = state.activities.length;
+  const activityStats = computeActivityAverages(month, activityCount);
+  let bestIdx = -1;
+  let bestAvg = -1;
+  let weakIdx = -1;
+  let weakAvg = 101;
+  activityStats.counts.forEach((count, idx) => {
+    if (!count) return;
+    const avg = Math.round(activityStats.sums[idx] / count);
+    if (avg > bestAvg) {
+      bestAvg = avg;
+      bestIdx = idx;
+    }
+    if (avg < weakAvg) {
+      weakAvg = avg;
+      weakIdx = idx;
+    }
+  });
+
+  if (bestIdx >= 0) {
+    insightBestActivity.textContent = state.activities[bestIdx];
+    if (insightBestActivityMeta) insightBestActivityMeta.textContent = `Average ${bestAvg}% across ${activityStats.counts[bestIdx]} days`;
+  }
+  if (weakIdx >= 0) {
+    insightWeakActivity.textContent = state.activities[weakIdx];
+    if (insightWeakActivityMeta) insightWeakActivityMeta.textContent = `Average ${weakAvg}% across ${activityStats.counts[weakIdx]} days`;
+  }
+
+  const keys = Object.keys(state.months).sort();
+  const currentIndex = keys.indexOf(currentMonthKey);
+  const prevKey = currentIndex > 0 ? keys[currentIndex - 1] : null;
+  if (!prevKey) {
+    if (insightTrendMeta) insightTrendMeta.textContent = "No previous month to compare.";
+    return;
+  }
+  const currentStats = computeMonthStats(currentMonthKey);
+  const prevStats = computeMonthStats(prevKey);
+  if (currentStats.avg === null || prevStats.avg === null) {
+    insightTrend.textContent = "-";
+    if (insightTrendMeta) insightTrendMeta.textContent = "Need more data for trend.";
+    return;
+  }
+
+  const diff = currentStats.avg - prevStats.avg;
+  const sign = diff > 0 ? "+" : diff < 0 ? "-" : "";
+  insightTrend.textContent = `${sign}${Math.abs(diff)}%`;
+  if (insightTrendMeta) {
+    const [prevYear, prevMonth] = prevKey.split("-").map(Number);
+    const prevLabel = `${monthName(prevMonth - 1)} ${prevYear}`;
+    const currentLabel = `${monthName(month.monthIndex)} ${month.year}`;
+    insightTrendMeta.textContent = `${currentLabel} vs ${prevLabel}`;
+  }
 }
 
 export function updateSyncStatus(status) {
@@ -438,6 +598,7 @@ export function buildTable() {
     renameBtn.type = "button";
     renameBtn.innerHTML = editIcon;
     renameBtn.title = "Rename activity";
+    renameBtn.setAttribute("aria-label", "Rename activity");
     renameBtn.addEventListener("click", () => {
       const current = state.activities[index];
       const next = prompt("Rename activity:", current);
@@ -457,6 +618,7 @@ export function buildTable() {
     deleteBtn.type = "button";
     deleteBtn.innerHTML = trashIcon;
     deleteBtn.title = "Delete activity column";
+    deleteBtn.setAttribute("aria-label", "Delete activity column");
     deleteBtn.addEventListener("click", () => {
       if (state.activities.length <= 1) {
         alert("At least one activity column is required.");
@@ -503,6 +665,8 @@ export function buildTable() {
     normalizeRowToActivityCount(rowData);
 
     const tr = document.createElement("tr");
+    tr.setAttribute("data-month-row", currentMonthKey);
+    tr.setAttribute("data-day-row", d.toString());
 
     const tdDay = document.createElement("td");
     tdDay.className = "col-day";
@@ -530,6 +694,7 @@ export function buildTable() {
       select.setAttribute("data-month", currentMonthKey);
       select.setAttribute("data-day", d.toString());
       select.setAttribute("data-activity", aIndex.toString());
+      select.setAttribute("aria-label", `Activity ${state.activities[aIndex]} for day ${d + 1}`);
 
       ACTIVITY_OPTIONS.forEach((opt) => {
         const o = document.createElement("option");

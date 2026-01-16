@@ -395,6 +395,14 @@ const accountLastSync = document.getElementById("accountLastSync");
 const dashboardSync = document.getElementById("dashboardSync");
 const authNotice = document.getElementById("authNotice");
 const authNoticeText = document.getElementById("authNoticeText");
+const insightBestWeekday = document.getElementById("insightBestWeekday");
+const insightBestWeekdayMeta = document.getElementById("insightBestWeekdayMeta");
+const insightBestActivity = document.getElementById("insightBestActivity");
+const insightBestActivityMeta = document.getElementById("insightBestActivityMeta");
+const insightWeakActivity = document.getElementById("insightWeakActivity");
+const insightWeakActivityMeta = document.getElementById("insightWeakActivityMeta");
+const insightTrend = document.getElementById("insightTrend");
+const insightTrendMeta = document.getElementById("insightTrendMeta");
 
 // --- js/ui.js ---
 function updateActivityCell(monthKey, dayIndex, activityIndex) {
@@ -450,6 +458,18 @@ function updateOverviewForDay(monthKey, dayIndex) {
 
   if (textEl) textEl.textContent = (overview === null || isNaN(overview)) ? "-" : `${overview}%`;
   if (labelEl) labelEl.innerHTML = `<strong>${label}</strong>`;
+
+  const row = document.querySelector(
+    `tr[data-month-row="${monthKey}"][data-day-row="${dayIndex}"]`
+  );
+  if (row) {
+    row.classList.remove("day-heat", "stage-0", "stage-1", "stage-2", "stage-3", "stage-4", "danger");
+    if (overview !== null && !isNaN(overview)) {
+      row.classList.add("day-heat");
+      if (stage > 0) row.classList.add("stage-" + stage);
+      if (danger) row.classList.add("danger");
+    }
+  }
 }
 
 function computeLongestStreakForMonth(monthKey) {
@@ -506,6 +526,7 @@ function updateSummaryAndHeader() {
     headerAvg.textContent = "0%";
     headerStreakMeta.textContent = "Longest streak: 0 days";
     updateDashboardStats();
+    renderInsights();
     return;
   }
 
@@ -514,6 +535,7 @@ function updateSummaryAndHeader() {
   headerAvg.textContent = `${stats.avg}%`;
   headerStreakMeta.textContent = `Longest streak: ${stats.longestStreak} days`;
   updateDashboardStats();
+  renderInsights();
 }
 
 function updateDashboardStats() {
@@ -533,6 +555,144 @@ function updateDashboardStats() {
   dashStreak.textContent = `Longest streak: ${stats.longestStreak} days`;
   dashDays.textContent = `${stats.daysTracked}`;
   dashPerfect.textContent = `Perfect days: ${stats.perfectDays}`;
+}
+
+function getTrackedDayCount(month) {
+  if (!month?.data) return 0;
+  return month.data.filter((day) => Array.isArray(day.activities) && day.activities.some((v) => v !== "none")).length;
+}
+
+function computeWeekdayAverages(month) {
+  const sums = Array(7).fill(0);
+  const counts = Array(7).fill(0);
+  month.data.forEach((day, idx) => {
+    if (!day || !Array.isArray(day.activities)) return;
+    const tracked = day.activities.some((v) => v !== "none");
+    if (!tracked) return;
+    const date = new Date(month.year, month.monthIndex, idx + 1);
+    const weekday = date.getDay();
+    const ov = day.overview;
+    if (ov === null || isNaN(ov)) return;
+    sums[weekday] += ov;
+    counts[weekday] += 1;
+  });
+  return { sums, counts };
+}
+
+function computeActivityAverages(month, activityCount) {
+  const sums = Array(activityCount).fill(0);
+  const counts = Array(activityCount).fill(0);
+  month.data.forEach((day) => {
+    if (!day || !Array.isArray(day.activities)) return;
+    const tracked = day.activities.some((v) => v !== "none");
+    if (!tracked) return;
+    day.activities.forEach((val, idx) => {
+      sums[idx] += getPctFromValue(val);
+      counts[idx] += 1;
+    });
+  });
+  return { sums, counts };
+}
+
+function setInsightPlaceholder() {
+  if (insightBestWeekday) insightBestWeekday.textContent = "-";
+  if (insightBestWeekdayMeta) insightBestWeekdayMeta.textContent = "No data yet.";
+  if (insightBestActivity) insightBestActivity.textContent = "-";
+  if (insightBestActivityMeta) insightBestActivityMeta.textContent = "No data yet.";
+  if (insightWeakActivity) insightWeakActivity.textContent = "-";
+  if (insightWeakActivityMeta) insightWeakActivityMeta.textContent = "No data yet.";
+  if (insightTrend) insightTrend.textContent = "-";
+  if (insightTrendMeta) insightTrendMeta.textContent = "No data yet.";
+}
+
+function renderInsights() {
+  if (!insightBestWeekday || !insightBestActivity || !insightWeakActivity || !insightTrend) return;
+  const state = getState();
+  const currentMonthKey = getCurrentMonthKey();
+  const month = state.months[currentMonthKey];
+  if (!month) {
+    setInsightPlaceholder();
+    return;
+  }
+
+  const trackedDays = getTrackedDayCount(month);
+  if (!trackedDays) {
+    setInsightPlaceholder();
+    return;
+  }
+
+  const weekdayNames = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+  const { sums, counts } = computeWeekdayAverages(month);
+  let bestWeekdayIndex = -1;
+  let bestWeekdayAvg = -1;
+  counts.forEach((count, idx) => {
+    if (!count) return;
+    const avg = Math.round(sums[idx] / count);
+    if (avg > bestWeekdayAvg) {
+      bestWeekdayAvg = avg;
+      bestWeekdayIndex = idx;
+    }
+  });
+
+  if (bestWeekdayIndex >= 0) {
+    insightBestWeekday.textContent = weekdayNames[bestWeekdayIndex];
+    if (insightBestWeekdayMeta) insightBestWeekdayMeta.textContent = `Average ${bestWeekdayAvg}% over ${counts[bestWeekdayIndex]} days`;
+  } else {
+    if (insightBestWeekdayMeta) insightBestWeekdayMeta.textContent = "No tracked weekdays yet.";
+  }
+
+  const activityCount = state.activities.length;
+  const activityStats = computeActivityAverages(month, activityCount);
+  let bestIdx = -1;
+  let bestAvg = -1;
+  let weakIdx = -1;
+  let weakAvg = 101;
+  activityStats.counts.forEach((count, idx) => {
+    if (!count) return;
+    const avg = Math.round(activityStats.sums[idx] / count);
+    if (avg > bestAvg) {
+      bestAvg = avg;
+      bestIdx = idx;
+    }
+    if (avg < weakAvg) {
+      weakAvg = avg;
+      weakIdx = idx;
+    }
+  });
+
+  if (bestIdx >= 0) {
+    insightBestActivity.textContent = state.activities[bestIdx];
+    if (insightBestActivityMeta) insightBestActivityMeta.textContent = `Average ${bestAvg}% across ${activityStats.counts[bestIdx]} days`;
+  }
+  if (weakIdx >= 0) {
+    insightWeakActivity.textContent = state.activities[weakIdx];
+    if (insightWeakActivityMeta) insightWeakActivityMeta.textContent = `Average ${weakAvg}% across ${activityStats.counts[weakIdx]} days`;
+  }
+
+  const keys = Object.keys(state.months).sort();
+  const currentIndex = keys.indexOf(currentMonthKey);
+  const prevKey = currentIndex > 0 ? keys[currentIndex - 1] : null;
+  if (!prevKey) {
+    if (insightTrendMeta) insightTrendMeta.textContent = "No previous month to compare.";
+    return;
+  }
+  const currentStats = computeMonthStats(currentMonthKey);
+  const prevStats = computeMonthStats(prevKey);
+  if (currentStats.avg === null || prevStats.avg === null) {
+    insightTrend.textContent = "-";
+    if (insightTrendMeta) insightTrendMeta.textContent = "Need more data for trend.";
+    return;
+  }
+
+  const diff = currentStats.avg - prevStats.avg;
+  const sign = diff > 0 ? "+" : diff < 0 ? "-" : "";
+  insightTrend.textContent = `${sign}${Math.abs(diff)}%`;
+  if (insightTrendMeta) {
+    const [prevYear, prevMonth] = prevKey.split("-").map(Number);
+    const prevLabel = `${monthName(prevMonth - 1)} ${prevYear}`;
+    const currentLabel = `${monthName(month.monthIndex)} ${month.year}`;
+    insightTrendMeta.textContent = `${currentLabel} vs ${prevLabel}`;
+  }
 }
 
 function updateSyncStatus(status) {
@@ -800,6 +960,7 @@ function buildTable() {
     renameBtn.type = "button";
     renameBtn.innerHTML = editIcon;
     renameBtn.title = "Rename activity";
+    renameBtn.setAttribute("aria-label", "Rename activity");
     renameBtn.addEventListener("click", () => {
       const current = state.activities[index];
       const next = prompt("Rename activity:", current);
@@ -819,6 +980,7 @@ function buildTable() {
     deleteBtn.type = "button";
     deleteBtn.innerHTML = trashIcon;
     deleteBtn.title = "Delete activity column";
+    deleteBtn.setAttribute("aria-label", "Delete activity column");
     deleteBtn.addEventListener("click", () => {
       if (state.activities.length <= 1) {
         alert("At least one activity column is required.");
@@ -865,6 +1027,8 @@ function buildTable() {
     normalizeRowToActivityCount(rowData);
 
     const tr = document.createElement("tr");
+    tr.setAttribute("data-month-row", currentMonthKey);
+    tr.setAttribute("data-day-row", d.toString());
 
     const tdDay = document.createElement("td");
     tdDay.className = "col-day";
@@ -892,6 +1056,7 @@ function buildTable() {
       select.setAttribute("data-month", currentMonthKey);
       select.setAttribute("data-day", d.toString());
       select.setAttribute("data-activity", aIndex.toString());
+      select.setAttribute("aria-label", `Activity ${state.activities[aIndex]} for day ${d + 1}`);
 
       ACTIVITY_OPTIONS.forEach((opt) => {
         const o = document.createElement("option");
@@ -975,10 +1140,12 @@ const DEFAULT_AUTH_TITLE = "Welcome back";
 const DEFAULT_AUTH_SUBTITLE = "Sign in to access your dashboard.";
 const SIGNUP_AUTH_TITLE = "Create your account";
 const SIGNUP_AUTH_SUBTITLE = "Add your name, email, and password to get started.";
+let lastFocusedElement = null;
 
 function updateAccountButton() {
   if (!accountBtn) return;
   accountBtn.textContent = isAuthenticated ? "My account" : "Login";
+  accountBtn.setAttribute("aria-expanded", "false");
   if (!isAuthenticated) {
     accountDropdown?.classList.add("is-hidden");
     if (accountEmail) accountEmail.textContent = "Guest";
@@ -1000,10 +1167,12 @@ function setView(view) {
 
 function openModal() {
   if (!authModal) return;
+  lastFocusedElement = document.activeElement;
   authModal.classList.remove("is-hidden");
   authModal.setAttribute("aria-hidden", "false");
   setAuthMode("login");
   setAuthMessage("");
+  focusFirstModalElement();
 }
 
 function closeModal() {
@@ -1011,15 +1180,57 @@ function closeModal() {
   authModal.classList.add("is-hidden");
   authModal.setAttribute("aria-hidden", "true");
   setAuthMessage("");
+  if (lastFocusedElement && typeof lastFocusedElement.focus === "function") {
+    lastFocusedElement.focus();
+  }
+  lastFocusedElement = null;
 }
 
 function toggleAccountMenu() {
   if (!accountDropdown) return;
   accountDropdown.classList.toggle("is-hidden");
+  if (accountBtn) {
+    const expanded = !accountDropdown.classList.contains("is-hidden");
+    accountBtn.setAttribute("aria-expanded", expanded ? "true" : "false");
+  }
 }
 
 function closeAccountMenu() {
   accountDropdown?.classList.add("is-hidden");
+  if (accountBtn) accountBtn.setAttribute("aria-expanded", "false");
+}
+
+function getFocusableModalElements() {
+  if (!authModal) return [];
+  return Array.from(
+    authModal.querySelectorAll(
+      'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+    )
+  ).filter((el) => !el.hasAttribute("disabled") && el.getAttribute("aria-hidden") !== "true");
+}
+
+function focusFirstModalElement() {
+  const focusable = getFocusableModalElements();
+  if (focusable.length) focusable[0].focus();
+}
+
+function trapModalFocus(event) {
+  if (!authModal || authModal.classList.contains("is-hidden")) return;
+  if (event.key !== "Tab") return;
+  const focusable = getFocusableModalElements();
+  if (!focusable.length) return;
+
+  const first = focusable[0];
+  const last = focusable[focusable.length - 1];
+  const active = document.activeElement;
+
+  if (event.shiftKey && active === first) {
+    event.preventDefault();
+    last.focus();
+  } else if (!event.shiftKey && active === last) {
+    event.preventDefault();
+    first.focus();
+  }
 }
 
 function emitSyncStatus(status) {
@@ -1366,6 +1577,10 @@ function initAuth() {
     if (event.key === "Escape" && !authModal.classList.contains("is-hidden")) {
       closeModal();
     }
+    if (event.key === "Escape" && accountDropdown && !accountDropdown.classList.contains("is-hidden")) {
+      closeAccountMenu();
+    }
+    trapModalFocus(event);
   });
   document.addEventListener("click", (event) => {
     if (!accountDropdown || !accountBtn) return;
