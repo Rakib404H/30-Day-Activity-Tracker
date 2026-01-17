@@ -31,15 +31,17 @@ export function stageFromOverview(overview) {
   return { stage: 4, label: "Perfect day", danger: false };
 }
 
-// Key logic: "none" counts as 0% and is included in the average.
 export function computeOverviewValueFromActivities(activitiesArray) {
   const total = Array.isArray(activitiesArray) ? activitiesArray.length : 0;
   if (total === 0) return null;
 
   let sum = 0;
+  let hasAny = false;
   activitiesArray.forEach((val) => {
     sum += getPctFromValue(val);
+    if (val !== "none") hasAny = true;
   });
 
+  if (!hasAny) return null;
   return Math.round(sum / total);
 }

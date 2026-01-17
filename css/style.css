@@ -45,23 +45,6 @@
       background: radial-gradient(circle, rgba(31, 42, 68, 0.18), transparent 60%);
     }
 
-    .skip-link {
-      position: absolute;
-      left: -999px;
-      top: 12px;
-      padding: 8px 12px;
-      background: #1f2937;
-      color: #ffffff;
-      border-radius: 8px;
-      text-decoration: none;
-      font-size: 12px;
-      z-index: 100;
-    }
-
-    .skip-link:focus {
-      left: 12px;
-    }
-
     .app {
       max-width: 1120px;
       margin: 24px auto 32px;
@@ -76,6 +59,11 @@
       border: 1px solid rgba(148, 163, 184, 0.25);
       margin-bottom: 16px;
       animation: cardIn 0.45s ease both;
+    }
+
+    .tracker-card {
+      background: transparent;
+      box-shadow: 0 12px 24px rgba(15, 23, 42, 0.06);
     }
 
     .main-header {
@@ -527,11 +515,11 @@
       background: #fecaca !important;
     }
 
-    tbody tr.day-heat.stage-1 td { background: rgba(249, 115, 22, 0.08); }
-    tbody tr.day-heat.stage-2 td { background: rgba(251, 191, 36, 0.09); }
-    tbody tr.day-heat.stage-3 td { background: rgba(34, 197, 94, 0.1); }
-    tbody tr.day-heat.stage-4 td { background: rgba(22, 163, 74, 0.12); }
-    tbody tr.day-heat.danger td { background: rgba(239, 68, 68, 0.08); }
+    tbody tr.day-heat.stage-1 td { background: transparent; }
+    tbody tr.day-heat.stage-2 td { background: transparent; }
+    tbody tr.day-heat.stage-3 td { background: transparent; }
+    tbody tr.day-heat.stage-4 td { background: transparent; }
+    tbody tr.day-heat.danger td { background: transparent; }
 
     .footer-bar {
       margin-top: 10px;

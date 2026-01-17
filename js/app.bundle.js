@@ -57,16 +57,18 @@ function stageFromOverview(overview) {
   return { stage: 4, label: "Perfect day", danger: false };
 }
 
-// Key logic: "none" counts as 0% and is included in the average.
 function computeOverviewValueFromActivities(activitiesArray) {
   const total = Array.isArray(activitiesArray) ? activitiesArray.length : 0;
   if (total === 0) return null;
 
   let sum = 0;
+  let hasAny = false;
   activitiesArray.forEach((val) => {
     sum += getPctFromValue(val);
+    if (val !== "none") hasAny = true;
   });
 
+  if (!hasAny) return null;
   return Math.round(sum / total);
 }
 
@@ -464,11 +466,6 @@ function updateOverviewForDay(monthKey, dayIndex) {
   );
   if (row) {
     row.classList.remove("day-heat", "stage-0", "stage-1", "stage-2", "stage-3", "stage-4", "danger");
-    if (overview !== null && !isNaN(overview)) {
-      row.classList.add("day-heat");
-      if (stage > 0) row.classList.add("stage-" + stage);
-      if (danger) row.classList.add("danger");
-    }
   }
 }
 
@@ -1027,8 +1024,6 @@ function buildTable() {
     normalizeRowToActivityCount(rowData);
 
     const tr = document.createElement("tr");
-    tr.setAttribute("data-month-row", currentMonthKey);
-    tr.setAttribute("data-day-row", d.toString());
 
     const tdDay = document.createElement("td");
     tdDay.className = "col-day";

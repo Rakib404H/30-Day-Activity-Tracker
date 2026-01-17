@@ -102,11 +102,6 @@ export function updateOverviewForDay(monthKey, dayIndex) {
   );
   if (row) {
     row.classList.remove("day-heat", "stage-0", "stage-1", "stage-2", "stage-3", "stage-4", "danger");
-    if (overview !== null && !isNaN(overview)) {
-      row.classList.add("day-heat");
-      if (stage > 0) row.classList.add("stage-" + stage);
-      if (danger) row.classList.add("danger");
-    }
   }
 }
 
@@ -665,8 +660,6 @@ export function buildTable() {
     normalizeRowToActivityCount(rowData);
 
     const tr = document.createElement("tr");
-    tr.setAttribute("data-month-row", currentMonthKey);
-    tr.setAttribute("data-day-row", d.toString());
 
     const tdDay = document.createElement("td");
     tdDay.className = "col-day";
