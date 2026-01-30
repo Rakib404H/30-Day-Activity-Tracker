@@ -150,6 +150,41 @@ Across versions, I continuously improved:
 ## Credits
 **Personal activity tracker designed by Rakib Hossain.**
 
+---
+
+## Development (Vite)
+Prereqs: Node.js 18+.
+
+1) Install dependencies
+```
+npm install
+```
+
+2) Create `.env` from `.env.example`
+```
+cp .env.example .env
+```
+
+3) Run dev server
+```
+npm run dev
+```
+
+### Build & preview
+```
+npm run build
+npm run preview
+```
+
+### Lint & format
+```
+npm run lint
+npm run format
+```
+
+### Deployment note
+If you deploy under a subpath (for example `/activity-tracker/`), set `base` in `vite.config.js`.
+
 
 
 

@@ -19,30 +19,14 @@
     body {
       margin: 0;
       font-family: "DM Sans", "Segoe UI", sans-serif;
-      background:
-        radial-gradient(circle at 12% 8%, rgba(255, 122, 89, 0.18), transparent 45%),
-        radial-gradient(circle at 88% 6%, rgba(31, 42, 68, 0.16), transparent 40%),
-        linear-gradient(180deg, #f7fbff 0%, #f3f6fb 50%, #f9fbff 100%);
+      background-color: var(--bg);
+      background-image:
+        radial-gradient(rgba(15, 23, 42, 0.08) 1px, transparent 1px),
+        radial-gradient(rgba(15, 23, 42, 0.05) 1px, transparent 1px),
+        linear-gradient(180deg, rgba(255, 255, 255, 0.9), rgba(244, 251, 255, 0.7));
+      background-size: 28px 28px, 14px 14px, auto;
+      background-position: 0 0, 7px 7px, 0 0;
       color: var(--text-main);
-    }
-
-    body::before,
-    body::after {
-      content: "";
-      position: fixed;
-      inset: -20% -10% auto auto;
-      width: 320px;
-      height: 320px;
-      background: radial-gradient(circle, rgba(255, 122, 89, 0.22), transparent 60%);
-      filter: blur(2px);
-      z-index: -1;
-    }
-
-    body::after {
-      inset: auto auto -15% -10%;
-      width: 360px;
-      height: 360px;
-      background: radial-gradient(circle, rgba(31, 42, 68, 0.18), transparent 60%);
     }
 
     .app {
@@ -271,6 +255,12 @@
 
     .btn-ghost:hover {
       background: #fff1ed;
+    }
+
+    #customizeToggle.btn-ghost,
+    #accountBtn.btn-ghost,
+    #resetCurrentMonth.btn-ghost {
+      border-color: #94a3b8;
     }
 
     .btn:active {
@@ -795,15 +785,9 @@
       position: absolute;
       inset: -20px -12px;
       background:
-        radial-gradient(circle at 12% 8%, rgba(255, 122, 89, 0.12), transparent 45%),
-        radial-gradient(circle at 88% 16%, rgba(31, 42, 68, 0.1), transparent 40%),
-        repeating-linear-gradient(
-          120deg,
-          rgba(148, 163, 184, 0.08) 0,
-          rgba(148, 163, 184, 0.08) 1px,
-          transparent 1px,
-          transparent 18px
-        );
+        radial-gradient(rgba(15, 23, 42, 0.06) 1px, transparent 1px),
+        linear-gradient(180deg, rgba(255, 255, 255, 0.9), rgba(244, 251, 255, 0.7));
+      background-size: 26px 26px, auto;
       border-radius: 20px;
       z-index: -1;
     }

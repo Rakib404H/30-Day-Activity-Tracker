@@ -1,11 +1,16 @@
-const SUPABASE_URL = "https://ycedxxubodzefetscxvi.supabase.co";
-const SUPABASE_ANON_KEY = "sb_publishable_yhoc20Sko8NC2k3XfWeW0Q_xUrZDyNi";
+import { createClient } from "@supabase/supabase-js";
+
+const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
+const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
 let client = null;
 
 export function getSupabaseClient() {
   if (client) return client;
-  if (!window.supabase?.createClient) return null;
-  client = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+  if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
+    console.warn("Supabase environment variables are missing.");
+    return null;
+  }
+  client = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
   return client;
 }
